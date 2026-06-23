@@ -1,0 +1,109 @@
+# =============================================================
+#  GATOBYTE — Mini Proyecto MLOps + RAG
+#  /config/rag_config.yaml
+# =============================================================
+
+data:
+  #parquet_path: "drive/My Drive/Machine Learning/proyecto/sample_ml.parquet"
+  # Local (fuera de Colab):
+  parquet_path: "data/sample_ml.parquet"
+  columns:
+    - text
+    - title
+    - rating
+    - helpful_vote
+    - parent_asin
+    - sentiment
+    - main_category
+  sample_size: 50000
+  random_seed: 42
+
+# ── Chunking con overlap (del ejercicio del docente) ──────
+chunking:
+  chunk_size: 500
+  chunk_overlap: 100
+  min_chunk_length: 30
+
+# ── Modelo multilingüe — búsqueda cross-language ─────────
+# Permite queries en español sobre reseñas en inglés.
+# Mismo tamaño que MiniLM-L6, corre en CPU sin GPU.
+# Política de la asignatura: solo inferencia, sin fine-tuning.
+embedding:
+  model_name: "paraphrase-multilingual-MiniLM-L12-v2"
+  batch_size: 128
+  normalize: true
+
+# ── Índice FAISS ──────────────────────────────────────────
+faiss:
+  index_type: "IndexFlatIP"
+  index_dir: "models/faiss_index"
+  keep_n_versions: 3
+
+# ── Búsqueda semántica ────────────────────────────────────
+retrieval:
+  default_top_k: 5
+  min_score: 0.0
+
+# ── MLflow ────────────────────────────────────────────────
+mlflow:
+  experiment_name: "RAG_Electronics_Reviews"
+  tracking_uri: "mlruns"
+
+# ── Política de actualización ─────────────────────────────
+update_policy:
+  max_age_days: 30
+  min_avg_cosine_sim: 0.30   # ajustado para modelo multilingüe
+  new_data_threshold_pct: 10.0
+  rebuild_strategy: "full"
+
+# ── Evaluación — queries en español, reseñas en inglés ───
+# El modelo multilingüe resuelve el cross-language matching.
+# Keywords en inglés porque las reseñas del dataset son en inglés.
+evaluation:
+  top_k: 5
+  queries:
+    - query: "problemas frecuentes con el producto"
+      keywords: ["problem", "issue", "defect", "broken", "fail", "malfunction", "bad"]
+
+    - query: "opiniones sobre duración de batería"
+      keywords: ["battery", "charge", "life", "drain", "dies", "hours", "autonomy"]
+
+    - query: "defectos de fabricación y materiales"
+      keywords: ["defect", "broke", "quality", "material", "cracked", "broken", "cheap"]
+
+    - query: "facilidad de configuración y uso"
+      keywords: ["easy", "setup", "install", "simple", "works", "plug", "straightforward"]
+
+    - query: "ruido y temperatura del dispositivo"
+      keywords: ["noise", "hot", "heat", "fan", "loud", "temperature", "overheat"]
+
+    - query: "relación calidad precio"
+      keywords: ["price", "value", "worth", "money", "expensive", "cheap", "cost"]
+
+    - query: "pantalla y calidad de imagen"
+      keywords: ["screen", "display", "image", "brightness", "sharp", "picture", "resolution"]
+
+# ── Comparación baseline ──────────────────────────────────
+baseline:
+  # Queries usadas en src/04_baseline_comparison.py
+  tfidf_max_features: 10000
+  comparison_queries:
+    - query_es: "problemas frecuentes con el producto"
+      query_en: "frequent problems with the product"
+      keywords: ["problem", "issue", "defect", "broken", "fail"]
+
+    - query_es: "opiniones sobre batería"
+      query_en: "battery life opinions"
+      keywords: ["battery", "charge", "life", "drain", "dies"]
+
+    - query_es: "defectos de fabricación"
+      query_en: "manufacturing defects"
+      keywords: ["defect", "broke", "quality", "cracked", "broken"]
+
+    - query_es: "facilidad de uso"
+      query_en: "ease of use"
+      keywords: ["easy", "setup", "simple", "works", "straightforward"]
+
+    - query_es: "ruido excesivo"
+      query_en: "excessive noise and heat"
+      keywords: ["noise", "hot", "heat", "fan", "loud", "overheat"]

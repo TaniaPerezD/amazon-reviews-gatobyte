@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GATOBYTE · Review Search</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+
+  <!-- ── HEADER ─────────────────────────────────────── -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon"><i data-lucide="star"></i></span>
+        <span class="logo-text">GATOBYTE</span>
+        <span class="logo-sub">Review Search</span>
+      </div>
+      <nav class="tab-nav" role="tablist">
+        <button class="tab-btn active" data-tab="search" role="tab"><i data-lucide="search"></i> Buscar</button>
+        <button class="tab-btn" data-tab="performance" role="tab"><i data-lucide="bar-chart-2"></i> Rendimiento</button>
+        <button class="tab-btn" data-tab="explorer" role="tab"><i data-lucide="database"></i> Explorar índice</button>
+        <button class="tab-btn" data-tab="status" role="tab"><i data-lucide="settings"></i> Sistema</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ── HERO ───────────────────────────────────────── -->
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <div class="eyebrow">RAG · Embeddings Semánticos · FAISS</div>
+        <h1>Busca entre miles de<br><em>reseñas de productos</em></h1>
+        <p>Escribe en lenguaje natural — en español o inglés — y encuentra los fragmentos
+           más relevantes del índice semántico.</p>
+      </div>
+      <div class="stats-strip" id="statsStrip">
+        <div class="stat-card">
+          <span class="stat-icon"><i data-lucide="layers"></i></span>
+          <div>
+            <div class="stat-label">Fragmentos indexados</div>
+            <div class="stat-value" id="statChunks">—</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon"><i data-lucide="message-square"></i></span>
+          <div>
+            <div class="stat-label">Reseñas procesadas</div>
+            <div class="stat-value" id="statSample">—</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon"><i data-lucide="cpu"></i></span>
+          <div>
+            <div class="stat-label">Dimensión embedding</div>
+            <div class="stat-value" id="statDim">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MAIN CONTENT ───────────────────────────────── -->
+  <main class="main-content">
+
+    <!-- ══ TAB: BUSCAR ══════════════════════════════════ -->
+    <section class="tab-panel active" id="tab-search">
+
+      <!-- Search box -->
+      <div class="search-panel">
+        <div class="search-label">¿Qué quieres saber sobre los productos?</div>
+        <div class="search-row">
+          <input
+            type="text"
+            id="queryInput"
+            class="search-input"
+            placeholder="Ej: la pantalla se ve apagada, se calienta demasiado, bluetooth se desconecta…"
+            autocomplete="off"
+          />
+          <button class="btn-search" id="searchBtn">
+            <i data-lucide="search"></i> Buscar reseñas
+          </button>
+        </div>
+
+        <!-- Sugerencias -->
+        <div class="suggestions">
+          <div class="sug-group">
+            <div class="sug-label"><i data-lucide="battery"></i> Batería y energía</div>
+            <div class="sug-chips">
+              <button class="chip" data-query="batería que no dura nada">batería que no dura</button>
+              <button class="chip" data-query="se descarga solo">se descarga solo</button>
+              <button class="chip" data-query="tarda mucho en cargar">tarda mucho en cargar</button>
+              <button class="chip" data-query="dura menos de un día">dura menos de un día</button>
+            </div>
+          </div>
+          <div class="sug-group">
+            <div class="sug-label"><i data-lucide="package"></i> Envío y empaque</div>
+            <div class="sug-chips">
+              <button class="chip" data-query="producto llegó roto">llegó roto</button>
+              <button class="chip" data-query="caja dañada al abrir">caja dañada</button>
+              <button class="chip" data-query="llegó sin accesorios">sin accesorios</button>
+              <button class="chip" data-query="envío tardó demasiado">envío tardó</button>
+            </div>
+          </div>
+          <div class="sug-group">
+            <div class="sug-label"><i data-lucide="zap"></i> Rendimiento</div>
+            <div class="sug-chips">
+              <button class="chip" data-query="se calienta demasiado">se calienta</button>
+              <button class="chip" data-query="lento después de actualizar">lento al actualizar</button>
+              <button class="chip" data-query="pantalla parpadeando">pantalla parpadea</button>
+              <button class="chip" data-query="se reinicia solo">se reinicia solo</button>
+            </div>
+          </div>
+          <div class="sug-group">
+            <div class="sug-label"><i data-lucide="wifi"></i> App y conectividad</div>
+            <div class="sug-chips">
+              <button class="chip" data-query="app no funciona bien">app no funciona</button>
+              <button class="chip" data-query="falla la conexión WiFi">WiFi inestable</button>
+              <button class="chip" data-query="bluetooth se desconecta">Bluetooth falla</button>
+              <button class="chip" data-query="no sincroniza correctamente">no sincroniza</button>
+            </div>
+          </div>
+          <div class="sug-group">
+            <div class="sug-label"><i data-lucide="check-circle"></i> Opiniones positivas</div>
+            <div class="sug-chips">
+              <button class="chip chip-positive" data-query="excelente calidad precio">calidad precio</button>
+              <button class="chip chip-positive" data-query="supera las expectativas">supera expectativas</button>
+              <button class="chip chip-positive" data-query="fácil de instalar">fácil de instalar</button>
+              <button class="chip chip-positive" data-query="atención al cliente increíble">buen soporte</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Opciones avanzadas -->
+        <details class="advanced">
+          <summary><i data-lucide="sliders-horizontal"></i> Opciones avanzadas</summary>
+          <div class="advanced-body">
+            <div class="slider-group">
+              <label for="topKSlider">
+                Top-K resultados
+                <span class="slider-val" id="topKVal">5</span>
+              </label>
+              <input type="range" id="topKSlider" min="3" max="15" value="5" step="1" />
+              <div class="slider-range"><span>3</span><span>15</span></div>
+            </div>
+            <div class="slider-group">
+              <label for="minScoreSlider">
+                Score mínimo
+                <span class="slider-val" id="minScoreVal">0.00</span>
+              </label>
+              <input type="range" id="minScoreSlider" min="0" max="0.9" value="0" step="0.05" />
+              <div class="slider-range"><span>0</span><span>0.9</span></div>
+            </div>
+          </div>
+        </details>
+      </div>
+
+      <!-- Resultados -->
+      <div id="resultsArea">
+        <div class="empty-state">
+          <div class="empty-icon"><i data-lucide="shopping-cart"></i></div>
+          <h3>¿Qué opina la gente?</h3>
+          <p>Escribe una consulta o elige una sugerencia para encontrar reseñas relevantes.</p>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ══ TAB: RENDIMIENTO ══════════════════════════════ -->
+    <section class="tab-panel" id="tab-performance">
+      <div class="panel-header">
+        <h2>Evaluación de recuperación</h2>
+        <p>Resultados del pipeline de evaluación sobre queries de prueba.</p>
+      </div>
+
+      <div id="evalContent">
+        <div class="loading-state"><span class="spinner"></span> Cargando métricas…</div>
+      </div>
+
+      <div class="metrics-legend">
+        <h3>Referencia de métricas</h3>
+        <table class="legend-table">
+          <thead>
+            <tr>
+              <th>Métrica</th>
+              <th>Descripción</th>
+              <th>Objetivo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Precision@K</strong></td>
+              <td>Fracción de resultados relevantes en Top-K</td>
+              <td><span class="target">≥ 0.60</span></td>
+            </tr>
+            <tr>
+              <td><strong>MRR</strong></td>
+              <td>Posición del primer resultado relevante</td>
+              <td><span class="target">≥ 0.60</span></td>
+            </tr>
+            <tr>
+              <td><strong>Cosine Sim</strong></td>
+              <td>Coherencia semántica promedio</td>
+              <td><span class="target">≥ 0.35</span></td>
+            </tr>
+            <tr>
+              <td><strong>Latencia</strong></td>
+              <td>Tiempo de respuesta por consulta</td>
+              <td><span class="target">< 200 ms</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ══ TAB: EXPLORADOR ══════════════════════════════ -->
+    <section class="tab-panel" id="tab-explorer">
+      <div class="panel-header">
+        <h2>Explorador de chunks</h2>
+        <p>Navega los fragmentos de texto almacenados en el índice FAISS.</p>
+      </div>
+
+      <div class="explorer-filters">
+        <div class="filter-group">
+          <label for="sentimentFilter">Sentimiento</label>
+          <select id="sentimentFilter">
+            <option value="Todos">Todos</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="categoryFilter">Categoría</label>
+          <select id="categoryFilter">
+            <option value="Todos">Todos</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="nChunks">Mostrar primeros N</label>
+          <select id="nChunks">
+            <option value="25">25</option>
+            <option value="50" selected>50</option>
+            <option value="100">100</option>
+            <option value="200">200</option>
+          </select>
+        </div>
+        <button class="btn-secondary" id="refreshChunks"><i data-lucide="refresh-cw"></i> Actualizar</button>
+      </div>
+
+      <div id="chunksContent">
+        <div class="loading-state"><span class="spinner"></span> Cargando chunks…</div>
+      </div>
+    </section>
+
+    <!-- ══ TAB: ESTADO ══════════════════════════════════ -->
+    <section class="tab-panel" id="tab-status">
+      <div class="panel-header">
+        <h2>Estado del sistema</h2>
+        <p>Información del índice activo y el flujo MLOps.</p>
+      </div>
+      <div id="statusContent">
+        <div class="loading-state"><span class="spinner"></span> Cargando estado…</div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <span>GATOBYTE · RAG Demo</span>
+    <span>·</span>
+    <a href="/docs" target="_blank">API Docs</a>
+    <span>·</span>
+    <span>FastAPI + FAISS</span>
+  </footer>
+
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>

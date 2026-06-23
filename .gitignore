@@ -1,0 +1,49 @@
+# Entorno virtual
+venv/
+.venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Datos crudos y procesados (demasiado grandes para GitHub)
+data/*.parquet
+data/*.csv
+data/*.json
+data/*.jsonl
+data/*.gz
+data/*.zip
+
+# Modelos e índices generados (se reconstruyen con src/01_build_index.py)
+models/faiss_index/v_*/
+
+# Experimentos de MLflow
+mlruns/
+
+# Reportes generados automáticamente (opcionales, descomenta si no quieres subirlos)
+# reports/
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+
+# Variables de entorno y secretos
+.env
+.env.*
+*.key
+secrets.yaml
+
+# Archivos de log
+*.log

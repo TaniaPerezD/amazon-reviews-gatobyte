@@ -1,0 +1,331 @@
+{
+  "problemas frecuentes con el producto": [
+    {
+      "parent_asin": "B098T12JT4",
+      "title": "It did not work",
+      "chunk_number": 38004,
+      "sentiment": "negative",
+      "main_category": "All Electronics",
+      "rating": 1.0,
+      "score": 0.7073
+    },
+    {
+      "parent_asin": "B07GX4CFTC",
+      "title": "El equipo no funciona, se usó otro cable y se limpia la superficie de carga y nada funciona",
+      "chunk_number": 2520,
+      "sentiment": "negative",
+      "main_category": "All Electronics",
+      "rating": 1.0,
+      "score": 0.6827
+    },
+    {
+      "parent_asin": "B07T688Q8X",
+      "title": "Does NOT FIT XBox 1 S controller",
+      "chunk_number": 20986,
+      "sentiment": "negative",
+      "main_category": "Computers",
+      "rating": 1.0,
+      "score": 0.6548
+    },
+    {
+      "parent_asin": "B07ZZ2Z3G4",
+      "title": "Product returned",
+      "chunk_number": 46768,
+      "sentiment": "neutral",
+      "main_category": "Cell Phones & Accessories",
+      "rating": 3.0,
+      "score": 0.6405
+    },
+    {
+      "parent_asin": "B07VFT95QW",
+      "title": "Mic doesn't work at all, audio quality is terrible",
+      "chunk_number": 48727,
+      "sentiment": "negative",
+      "main_category": "All Electronics",
+      "rating": 1.0,
+      "score": 0.6306
+    }
+  ],
+  "opiniones sobre duración de batería": [
+    {
+      "parent_asin": "B00HIUAQHW",
+      "title": "I like it",
+      "chunk_number": 54139,
+      "sentiment": "positive",
+      "main_category": "All Electronics",
+      "rating": 4.0,
+      "score": 0.8021
+    },
+    {
+      "parent_asin": "B075T6L8HH",
+      "title": "Battery isn't what it claims",
+      "chunk_number": 31653,
+      "sentiment": "neutral",
+      "main_category": "All Electronics",
+      "rating": 3.0,
+      "score": 0.7974
+    },
+    {
+      "parent_asin": "B00OQVZDJM",
+      "title": "Five Stars",
+      "chunk_number": 53470,
+      "sentiment": "positive",
+      "main_category": "Amazon Devices",
+      "rating": 5.0,
+      "score": 0.7947
+    },
+    {
+      "parent_asin": "B0BF59V2F7",
+      "title": "Cust. Service good, set up is not bad, great product",
+      "chunk_number": 13424,
+      "sentiment": "positive",
+      "main_category": "Camera & Photo",
+      "rating": 5.0,
+      "score": 0.7924
+    },
+    {
+      "parent_asin": "B005GNRF9K",
+      "title": "Disappointing lifespam",
+      "chunk_number": 53937,
+      "sentiment": "negative",
+      "main_category": "All Electronics",
+      "rating": 2.0,
+      "score": 0.785
+    }
+  ],
+  "defectos de fabricación y materiales": [
+    {
+      "parent_asin": "B072PZLZ25",
+      "title": "Very disappointed with durability",
+      "chunk_number": 11279,
+      "sentiment": "negative",
+      "main_category": "Computers",
+      "rating": 2.0,
+      "score": 0.6986
+    },
+    {
+      "parent_asin": "B01M6WDPZC",
+      "title": "Breaks easily",
+      "chunk_number": 44760,
+      "sentiment": "negative",
+      "main_category": "Computers",
+      "rating": 2.0,
+      "score": 0.6557
+    },
+    {
+      "parent_asin": "B07CH8L9QD",
+      "title": "It has disintegrated in just 3 months",
+      "chunk_number": 25409,
+      "sentiment": "negative",
+      "main_category": "Computers",
+      "rating": 2.0,
+      "score": 0.6425
+    },
+    {
+      "parent_asin": "B09LC2QD9L",
+      "title": "Poor materials quality",
+      "chunk_number": 9815,
+      "sentiment": "negative",
+      "main_category": "Office Products",
+      "rating": 2.0,
+      "score": 0.6354
+    },
+    {
+      "parent_asin": "B00XJC0Y48",
+      "title": "Fraud and Negligence.",
+      "chunk_number": 59428,
+      "sentiment": "negative",
+      "main_category": "Car Electronics",
+      "rating": 2.0,
+      "score": 0.6346
+    }
+  ],
+  "facilidad de configuración y uso": [
+    {
+      "parent_asin": "B07H65KP63",
+      "title": "Love the echo dot",
+      "chunk_number": 54877,
+      "sentiment": "positive",
+      "main_category": "Amazon Devices",
+      "rating": 5.0,
+      "score": 0.7772
+    },
+    {
+      "parent_asin": "B075X8471B",
+      "title": "Four Stars",
+      "chunk_number": 3215,
+      "sentiment": "positive",
+      "main_category": "Amazon Devices",
+      "rating": 4.0,
+      "score": 0.7552
+    },
+    {
+      "parent_asin": "B09XYMSZLL",
+      "title": "good",
+      "chunk_number": 24778,
+      "sentiment": "positive",
+      "main_category": "All Electronics",
+      "rating": 4.0,
+      "score": 0.7389
+    },
+    {
+      "parent_asin": "B088CQWPY1",
+      "title": "Easy to use and set up",
+      "chunk_number": 28066,
+      "sentiment": "positive",
+      "main_category": "Camera & Photo",
+      "rating": 5.0,
+      "score": 0.7303
+    },
+    {
+      "parent_asin": "B07L3XB2B7",
+      "title": "excelente",
+      "chunk_number": 26737,
+      "sentiment": "positive",
+      "main_category": "All Electronics",
+      "rating": 5.0,
+      "score": 0.7214
+    }
+  ],
+  "ruido y temperatura del dispositivo": [
+    {
+      "parent_asin": "B08WZCCBQJ",
+      "title": "Sketchy",
+      "chunk_number": 53986,
+      "sentiment": "neutral",
+      "main_category": "All Electronics",
+      "rating": 3.0,
+      "score": 0.672
+    },
+    {
+      "parent_asin": "B087D9VRGC",
+      "title": "Noisy",
+      "chunk_number": 57236,
+      "sentiment": "negative",
+      "main_category": "All Electronics",
+      "rating": 2.0,
+      "score": 0.6379
+    },
+    {
+      "parent_asin": "B081D5HBBW",
+      "title": "Strange whirring sound=then overheats",
+      "chunk_number": 21524,
+      "sentiment": "negative",
+      "main_category": "Computers",
+      "rating": 2.0,
+      "score": 0.6331
+    },
+    {
+      "parent_asin": "B074Y11C8B",
+      "title": "Ok",
+      "chunk_number": 45654,
+      "sentiment": "neutral",
+      "main_category": "Cell Phones & Accessories",
+      "rating": 3.0,
+      "score": 0.6038
+    },
+    {
+      "parent_asin": "B07CT7WMBC",
+      "title": "Noisy Fan",
+      "chunk_number": 17785,
+      "sentiment": "neutral",
+      "main_category": "Computers",
+      "rating": 3.0,
+      "score": 0.6008
+    }
+  ],
+  "relación calidad precio": [
+    {
+      "parent_asin": "B07CPHVJ64",
+      "title": "Three Stars",
+      "chunk_number": 28765,
+      "sentiment": "neutral",
+      "main_category": "Computers",
+      "rating": 3.0,
+      "score": 0.7915
+    },
+    {
+      "parent_asin": "B0C1SS8SPC",
+      "title": "No es muy potente y el cable es corto",
+      "chunk_number": 59434,
+      "sentiment": "positive",
+      "main_category": "Amazon Home",
+      "rating": 4.0,
+      "score": 0.7811
+    },
+    {
+      "parent_asin": "B09QY1BNWW",
+      "title": "Good for the price",
+      "chunk_number": 55739,
+      "sentiment": "neutral",
+      "main_category": "Car Electronics",
+      "rating": 3.0,
+      "score": 0.767
+    },
+    {
+      "parent_asin": "B01HVHIZFG",
+      "title": "Five Stars",
+      "chunk_number": 55927,
+      "sentiment": "positive",
+      "main_category": "Computers",
+      "rating": 5.0,
+      "score": 0.7659
+    },
+    {
+      "parent_asin": "B08JD4CGCD",
+      "title": "Good value",
+      "chunk_number": 47408,
+      "sentiment": "positive",
+      "main_category": "Computers",
+      "rating": 5.0,
+      "score": 0.7643
+    }
+  ],
+  "pantalla y calidad de imagen": [
+    {
+      "parent_asin": "B0C2WWCBSG",
+      "title": "Flimsy build, low quality picture",
+      "chunk_number": 58666,
+      "sentiment": "negative",
+      "main_category": "Computers",
+      "rating": 1.0,
+      "score": 0.7552
+    },
+    {
+      "parent_asin": "B08X71T55L",
+      "title": "It’s ok",
+      "chunk_number": 19548,
+      "sentiment": "negative",
+      "main_category": "Camera & Photo",
+      "rating": 2.0,
+      "score": 0.7299
+    },
+    {
+      "parent_asin": "B0BGXS26QL",
+      "title": "Would recommend and buy again",
+      "chunk_number": 18664,
+      "sentiment": "neutral",
+      "main_category": "All Electronics",
+      "rating": 3.0,
+      "score": 0.7163
+    },
+    {
+      "parent_asin": "B01AZC3J3M",
+      "title": "if you must have wi-di",
+      "chunk_number": 60493,
+      "sentiment": "neutral",
+      "main_category": "Computers",
+      "rating": 3.0,
+      "score": 0.7138
+    },
+    {
+      "parent_asin": "B01CQK4BGA",
+      "title": "Nice design but Not worth the money",
+      "chunk_number": 6935,
+      "sentiment": "negative",
+      "main_category": "Cell Phones & Accessories",
+      "rating": 2.0,
+      "score": 0.7112
+    }
+  ]
+}

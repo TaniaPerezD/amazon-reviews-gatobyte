@@ -1,0 +1,32 @@
+# GATOBYTE — Mini Proyecto MLOps + RAG
+# Todas las dependencias corren en CPU sin GPU dedicada
+# Compatible con Python 3.10+
+
+# ── Embeddings (modelo preentrenado, solo inferencia) ──
+sentence-transformers==2.7.0   # all-MiniLM-L6-v2 (~80 MB, CPU)
+
+# ── Índice vectorial ───────────────────────────────────
+faiss-cpu==1.8.0               # IndexFlatIP — similitud coseno exacta
+
+# ── MLOps tracking ────────────────────────────────────
+mlflow==2.13.0
+
+# ── Configuración ─────────────────────────────────────
+pyyaml==6.0.1                  # lectura de rag_config.yaml
+
+# ── Demo interactiva ──────────────────────────────────
+fastapi==0.100.0                # API REST
+uvicorn==0.23.2                 # servidor ASGI para FastAPI
+
+# ── Procesamiento de datos ────────────────────────────
+pandas==2.2.2
+numpy==1.26.4
+pyarrow==15.0.2                # lectura de archivos .parquet (mlflow 2.13 requires <16)
+
+# ── Visualizaciones (notebook exploratorio) ───────────
+matplotlib==3.9.0
+seaborn==0.13.2
+
+# ── Ya disponibles en el entorno del proyecto ─────────
+# scikit-learn  (usado en Fases 2 y 3)
+# torch         (instalado por sentence-transformers, CPU only)

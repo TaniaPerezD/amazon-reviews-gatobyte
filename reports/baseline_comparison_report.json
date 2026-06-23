@@ -1,0 +1,183 @@
+[
+  {
+    "query_es": "problemas frecuentes con el producto",
+    "query_en": "frequent problems with the product",
+    "keywords": [
+      "problem",
+      "issue",
+      "defect",
+      "broken",
+      "fail"
+    ],
+    "tfidf": {
+      "precision_at_k": 0.8,
+      "reciprocal_rank": 0.5,
+      "avg_score": 0.3436,
+      "latency_ms": 32.7,
+      "query_used": "frequent problems with the product",
+      "top_results": [
+        "Frequent battery charges. If you forget it goes into “time only” mode",
+        "had it for year now now problems",
+        "worked on my tv with no problems"
+      ]
+    },
+    "multilingual": {
+      "precision_at_k": 0.4,
+      "reciprocal_rank": 0.5,
+      "avg_score": 0.6632,
+      "latency_ms": 208.7,
+      "query_used": "problemas frecuentes con el producto",
+      "top_results": [
+        "The product did not work correctly",
+        "El producto no sirve, defectuso",
+        "This product does not fit as described."
+      ]
+    },
+    "winner": "TF-IDF"
+  },
+  {
+    "query_es": "opiniones sobre batería",
+    "query_en": "battery life opinions",
+    "keywords": [
+      "battery",
+      "charge",
+      "life",
+      "drain",
+      "dies"
+    ],
+    "tfidf": {
+      "precision_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "avg_score": 0.7567,
+      "latency_ms": 11.8,
+      "query_used": "battery life opinions",
+      "top_results": [
+        "This has the same battery life as the battery that I was replacing",
+        "Love the battery life and size",
+        "Battery life sucks but it’s still good"
+      ]
+    },
+    "multilingual": {
+      "precision_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "avg_score": 0.6591,
+      "latency_ms": 52.4,
+      "query_used": "opiniones sobre batería",
+      "top_results": [
+        "Love the battery life and size",
+        "Wish battery was a little bit better",
+        "Battery life sucks, they are cute and fit well in my ear"
+      ]
+    },
+    "winner": "MiniLM"
+  },
+  {
+    "query_es": "defectos de fabricación",
+    "query_en": "manufacturing defects",
+    "keywords": [
+      "defect",
+      "broke",
+      "quality",
+      "cracked",
+      "broken"
+    ],
+    "tfidf": {
+      "precision_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "avg_score": 0.3386,
+      "latency_ms": 9.9,
+      "query_used": "manufacturing defects",
+      "top_results": [
+        "Some manufacturing defects in about 5 of them where one side of the plastic liner is sealed a half inch away from edge m",
+        "The filters work well enough. Though either by defects or perhps use? the outside edges seemed damaged.",
+        "'draconian' Return Policy!!!<br />While the Lenovo product itself is a very well made product, all items are susceptible"
+      ]
+    },
+    "multilingual": {
+      "precision_at_k": 0.2,
+      "reciprocal_rank": 0.3333333333333333,
+      "avg_score": 0.6149,
+      "latency_ms": 46.4,
+      "query_used": "defectos de fabricación",
+      "top_results": [
+        "Was never able to assemble properly",
+        "Of adequate construction/manufacture.<br />Somewhat difficult to install.",
+        "El producto no sirve, defectuso"
+      ]
+    },
+    "winner": "TF-IDF"
+  },
+  {
+    "query_es": "facilidad de uso",
+    "query_en": "ease of use",
+    "keywords": [
+      "easy",
+      "setup",
+      "simple",
+      "works",
+      "straightforward"
+    ],
+    "tfidf": {
+      "precision_at_k": 0.2,
+      "reciprocal_rank": 0.3333333333333333,
+      "avg_score": 0.6005,
+      "latency_ms": 11.5,
+      "query_used": "ease of use",
+      "top_results": [
+        "Love the big screen and ease of use",
+        "Ease of use was good. Needs to be more intelligent if the machines are to take over the world",
+        "Works as advertised. Definitely beats on screen keyboards for ease of use."
+      ]
+    },
+    "multilingual": {
+      "precision_at_k": 0.2,
+      "reciprocal_rank": 0.3333333333333333,
+      "avg_score": 0.7259,
+      "latency_ms": 17.8,
+      "query_used": "facilidad de uso",
+      "top_results": [
+        "muy práctico y de fácil manejo",
+        "Very convenient and can be used normally",
+        "Excellent, easy used and very effective"
+      ]
+    },
+    "winner": "MiniLM"
+  },
+  {
+    "query_es": "ruido excesivo",
+    "query_en": "excessive noise and heat",
+    "keywords": [
+      "noise",
+      "hot",
+      "heat",
+      "fan",
+      "loud",
+      "overheat"
+    ],
+    "tfidf": {
+      "precision_at_k": 0.8,
+      "reciprocal_rank": 1.0,
+      "avg_score": 0.3625,
+      "latency_ms": 10.1,
+      "query_used": "excessive noise and heat",
+      "top_results": [
+        "Poorly manufactured, cheap components, excessive heat. Do not recommend.",
+        "Fell off but reattached after 5 months in NM heat",
+        "Not enough heat, wouldn’t even defrost windshield"
+      ]
+    },
+    "multilingual": {
+      "precision_at_k": 0.8,
+      "reciprocal_rank": 1.0,
+      "avg_score": 0.7684,
+      "latency_ms": 16.8,
+      "query_used": "ruido excesivo",
+      "top_results": [
+        "Noise cancelling but greatly muffles sound :/",
+        "OK quality. Hissing noise is an issue.",
+        "Very loud. Stopped using due to the noise."
+      ]
+    },
+    "winner": "MiniLM"
+  }
+]
