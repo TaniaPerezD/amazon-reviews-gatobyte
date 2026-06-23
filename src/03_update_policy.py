@@ -19,7 +19,10 @@ import numpy as np
 import faiss
 import mlflow
 import yaml
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 
+from datetime import datetime as dt
 from pathlib import Path
 from sentence_transformers import SentenceTransformer
 
@@ -98,18 +101,54 @@ def check_quality_drift(manifest: dict, cfg: dict) -> tuple[bool, float]:
 
 
 # ─────────────────────────────────────────────────────────
-# T3 — Volumen de datos nuevos
+# T3 — Volumen de datos nuevos (funcional)
 # ─────────────────────────────────────────────────────────
-def check_new_data(manifest: dict, cfg: dict,
-                   new_records_count: int = 0) -> tuple[bool, float]:
+def check_new_data(manifest: dict, cfg: dict) -> tuple[bool, float]:
     """
-    Si los datos nuevos desde la última indexación superan el umbral %,
-    se activa el trigger de re-indexación.
-    En producción, new_records_count vendría de un contador en la fuente.
+    Lee data/new_records_count.txt para saber cuántos registros nuevos
+    han llegado desde la última indexación.
+
+    Flujo de producción:
+      • Un proceso ETL actualiza new_records_count.txt al ingestar datos.
+      • Este script lee el contador y decide si el volumen justifica REBUILD.
+      • Tras un REBUILD exitoso el contador debe resetearse a 0.
+
+    Fallback: si el archivo no existe, compara la fecha de modificación
+    del parquet vs la fecha de creación del índice como estimación.
     """
+    counter_path = Path("data/new_records_count.txt")
     current_size = manifest.get("sample_size", 1)
     threshold    = cfg["update_policy"]["new_data_threshold_pct"]
-    pct_new      = (new_records_count / current_size) * 100
+    new_records  = 0
+
+    if counter_path.exists():
+        try:
+            new_records = int(counter_path.read_text().strip())
+            print(f"    [T3] Contador leído: {counter_path} → {new_records:,} registros nuevos")
+        except (ValueError, IOError):
+            new_records = 0
+    else:
+        # Fallback: detectar si el parquet fue modificado después del índice
+        parquet_path = Path(cfg["data"]["parquet_path"])
+        if parquet_path.exists():
+            try:
+                ts         = manifest.get("created_at_utc", "")
+                created_dt = datetime.datetime.strptime(ts, "%Y%m%d_%H%M%S")
+                pmtime     = datetime.datetime.utcfromtimestamp(
+                    parquet_path.stat().st_mtime
+                )
+                if pmtime > created_dt:
+                    new_records = int(current_size * 0.05)
+                    print(f"    [T3] Parquet más nuevo que el índice — "
+                          f"estimando {new_records:,} registros nuevos")
+                else:
+                    print(f"    [T3] Sin archivo contador y parquet sin cambios → 0")
+            except Exception:
+                pass
+        else:
+            print(f"    [T3] Parquet no encontrado → asumiendo 0 registros nuevos")
+
+    pct_new = (new_records / current_size) * 100 if current_size > 0 else 0.0
     return pct_new > threshold, round(pct_new, 2)
 
 
@@ -171,6 +210,133 @@ def log_policy_decision(manifest: dict, age_days: float, avg_sim: float,
 
 
 # ─────────────────────────────────────────────────────────
+# Mejora 2 — Historial persistente de monitoreo
+# ─────────────────────────────────────────────────────────
+def save_monitoring_history(manifest: dict, age_days: float, avg_sim: float,
+                             pct_new: float, needs_update: bool,
+                             reasons: list[str]) -> str:
+    """
+    Persiste cada chequeo en reports/monitoring_history.json.
+    Permite analizar la tendencia de drift a lo largo del tiempo
+    y alimenta la gráfica plot_drift_trend().
+    """
+    history_path = Path("reports/monitoring_history.json")
+    history: list = []
+
+    if history_path.exists():
+        with open(history_path, encoding="utf-8") as f:
+            history = json.load(f)
+
+    history.append({
+        "checked_at_utc"    : datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
+        "index_version"     : manifest.get("version", "unknown"),
+        "age_days"          : round(age_days, 2),
+        "avg_cosine_control": avg_sim,
+        "pct_new_data"      : pct_new,
+        "decision"          : "REBUILD" if needs_update else "KEEP",
+        "triggers"          : reasons if reasons else [],
+    })
+
+    with open(history_path, "w", encoding="utf-8") as f:
+        json.dump(history, f, indent=2, ensure_ascii=False)
+
+    print(f"[✓] Historial actualizado: {len(history)} chequeo(s) "
+          f"en reports/monitoring_history.json")
+    return str(history_path)
+
+
+# ─────────────────────────────────────────────────────────
+# Mejora 3 — Gráfica de tendencia de drift
+# ─────────────────────────────────────────────────────────
+def plot_drift_trend(cfg: dict) -> str | None:
+    """
+    Lee reports/monitoring_history.json y genera reports/drift_trend.png.
+    Muestra la evolución de la similitud coseno con el umbral de rebuild
+    y las decisiones KEEP / REBUILD marcadas visualmente.
+    """
+    history_path = Path("reports/monitoring_history.json")
+    if not history_path.exists():
+        print("[!] Sin historial aún — omitiendo gráfica.")
+        return None
+
+    with open(history_path, encoding="utf-8") as f:
+        history = json.load(f)
+
+    if not history:
+        print("[!] Historial vacío — omitiendo gráfica.")
+        return None
+
+    dates     = [dt.strptime(h["checked_at_utc"], "%Y-%m-%d %H:%M:%S") for h in history]
+    cosines   = [h["avg_cosine_control"] for h in history]
+    pct_news  = [h["pct_new_data"] for h in history]
+    decisions = [h["decision"] for h in history]
+    threshold_cos  = cfg["update_policy"]["min_avg_cosine_sim"]
+    threshold_data = cfg["update_policy"]["new_data_threshold_pct"]
+
+    fig, ax = plt.subplots(figsize=(10, 4))
+    ax2 = ax.twinx()
+
+    # Eje izquierdo — similitud coseno
+    ax.plot(dates, cosines, "b-o", markersize=7, linewidth=2,
+            label="Cosine Sim (eje izq.)")
+    ax.axhline(y=threshold_cos, color="blue", linestyle="--", linewidth=1.2,
+               alpha=0.6, label=f"Umbral coseno ({threshold_cos})")
+    ax.axhspan(0, threshold_cos, alpha=0.05, color="blue")
+    ax.set_ylabel("Similitud coseno promedio", color="blue")
+    ax.set_ylim(0, 1.05)
+    ax.tick_params(axis="y", labelcolor="blue")
+
+    # Eje derecho — % datos nuevos
+    ax2.bar(dates, pct_news, width=0.003, alpha=0.35, color="orange",
+            label=f"% datos nuevos (eje der.)")
+    ax2.axhline(y=threshold_data, color="orange", linestyle="--", linewidth=1.2,
+                alpha=0.8, label=f"Umbral datos ({threshold_data}%)")
+    ax2.set_ylabel("% datos nuevos desde último índice", color="orange")
+    ax2.set_ylim(0, max(max(pct_news) * 1.5, threshold_data * 2))
+    ax2.tick_params(axis="y", labelcolor="orange")
+
+    # Marcadores de decisión
+    rebuild_d = [d for d, dec in zip(dates, decisions) if dec == "REBUILD"]
+    rebuild_c = [c for c, dec in zip(cosines, decisions) if dec == "REBUILD"]
+    if rebuild_d:
+        ax.scatter(rebuild_d, rebuild_c, color="red", s=160, zorder=5,
+                   marker="X", label="Decisión REBUILD")
+
+    keep_d = [d for d, dec in zip(dates, decisions) if dec == "KEEP"]
+    keep_c = [c for c, dec in zip(cosines, decisions) if dec == "KEEP"]
+    if keep_d:
+        ax.scatter(keep_d, keep_c, color="green", s=90, zorder=5,
+                   label="Decisión KEEP")
+
+    ax.set_xlabel("Fecha del chequeo (UTC)")
+    ax.set_title("GATOBYTE — Monitoreo de Drift: Calidad del Índice RAG")
+    ax.grid(True, alpha=0.25)
+
+    # Leyenda combinada de ambos ejes
+    lines1, labels1 = ax.get_legend_handles_labels()
+    lines2, labels2 = ax2.get_legend_handles_labels()
+    ax.legend(lines1 + lines2, labels1 + labels2, loc="upper left",
+              fontsize=8, ncol=2)
+
+    if len(dates) > 1:
+        ax.xaxis.set_major_formatter(mdates.DateFormatter("%m/%d %H:%M"))
+        fig.autofmt_xdate()
+    else:
+        ax.set_xticks(dates)
+        ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d %H:%M"))
+        fig.autofmt_xdate()
+
+    plt.tight_layout()
+    chart_path = Path("reports/drift_trend.png")
+    plt.savefig(chart_path, dpi=130, bbox_inches="tight")
+    plt.close()
+
+    print(f"[✓] Gráfica de tendencia → reports/drift_trend.png  "
+          f"({len(history)} punto(s))")
+    return str(chart_path)
+
+
+# ─────────────────────────────────────────────────────────
 # MAIN
 # ─────────────────────────────────────────────────────────
 if __name__ == "__main__":
@@ -193,8 +359,7 @@ if __name__ == "__main__":
         print("[→] Verificando triggers...")
         age_trigger,   age_days = check_age(manifest, cfg)
         drift_trigger, avg_sim  = check_quality_drift(manifest, cfg)
-        data_trigger,  pct_new  = check_new_data(manifest, cfg,
-                                                  new_records_count=0)
+        data_trigger,  pct_new  = check_new_data(manifest, cfg)
 
         lim_age  = cfg["update_policy"]["max_age_days"]
         lim_cos  = cfg["update_policy"]["min_avg_cosine_sim"]
@@ -235,6 +400,13 @@ if __name__ == "__main__":
             manifest, age_days, avg_sim, pct_new,
             needs_update, reasons, cfg
         )
+
+        # ── Historial persistente + gráfica de tendencia ─
+        save_monitoring_history(
+            manifest, age_days, avg_sim, pct_new,
+            needs_update, reasons
+        )
+        plot_drift_trend(cfg)
 
         # ── Resumen de la política (para el informe) ──────
         print("\n" + "─"*62)
