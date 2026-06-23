@@ -15,7 +15,6 @@ El pipeline sigue la metodología CRISP-DM e incluye tracking con MLflow, versio
 ## Estructura del repositorio
 
 ```
-rag_v2/
 ├── data/
 │   ├── sample_ml.parquet          ← dataset (50 000 reseñas de Electronics)
 │   └── FUENTE.md                  ← procedencia y descripción del dataset
