@@ -1,0 +1,40 @@
+[
+  {
+    "checked_at_utc": "2026-06-23 03:51:53",
+    "index_version": "v_20260622_235803_f96d8826",
+    "age_days": 0.16,
+    "avg_cosine_control": 0.7892,
+    "pct_new_data": 0.0,
+    "decision": "KEEP",
+    "triggers": []
+  },
+  {
+    "checked_at_utc": "2026-06-23 03:52:50",
+    "index_version": "v_20260622_235803_f96d8826",
+    "age_days": 0.16,
+    "avg_cosine_control": 0.7892,
+    "pct_new_data": 9.0,
+    "decision": "KEEP",
+    "triggers": []
+  },
+  {
+    "checked_at_utc": "2026-06-23 03:53:08",
+    "index_version": "v_20260622_235803_f96d8826",
+    "age_days": 0.16,
+    "avg_cosine_control": 0.7892,
+    "pct_new_data": 12.0,
+    "decision": "REBUILD",
+    "triggers": [
+      "new_data>10.0%"
+    ]
+  },
+  {
+    "checked_at_utc": "2026-06-23 03:53:28",
+    "index_version": "v_20260622_235803_f96d8826",
+    "age_days": 0.16,
+    "avg_cosine_control": 0.7892,
+    "pct_new_data": 0.0,
+    "decision": "KEEP",
+    "triggers": []
+  }
+]
