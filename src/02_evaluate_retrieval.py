@@ -332,6 +332,114 @@ def save_report(report: dict, cfg: dict):
 
 
 # ─────────────────────────────────────────────────────────
+# Fix 1 — Ejemplos documentados con texto real recuperado
+# ─────────────────────────────────────────────────────────
+def save_query_examples(report: dict, cfg: dict) -> str:
+    """
+    Genera reports/query_examples.md con el texto real de los chunks
+    recuperados para cada query. Cubre el requisito de 'al menos cinco
+    ejemplos de consulta documentados' con evidencia legible.
+    """
+    reports_dir = Path("reports")
+    reports_dir.mkdir(exist_ok=True)
+
+    top_k   = cfg["evaluation"]["top_k"]
+    model   = cfg["embedding"]["model_name"]
+    idx_type = cfg["faiss"]["index_type"]
+    md_path = reports_dir / "query_examples.md"
+
+    with open(md_path, "w", encoding="utf-8") as f:
+        f.write("# GATOBYTE — Ejemplos Documentados de Recuperación Semántica\n\n")
+        f.write(f"**Modelo:** `{model}`  \n")
+        f.write(f"**Índice:** FAISS `{idx_type}`  \n")
+        f.write(f"**Top-K:** {top_k}  \n")
+        f.write(f"**Queries en español — corpus en inglés (cross-language)**\n\n")
+        f.write("---\n\n")
+
+        for i, (query, m) in enumerate(report.items(), 1):
+            f.write(f"## Ejemplo {i} — \"{query}\"\n\n")
+            f.write(f"| Métrica | Valor |\n|---|---|\n")
+            f.write(f"| Precision@{top_k} | **{m['precision_at_k']:.2f}** |\n")
+            f.write(f"| MRR | **{m['reciprocal_rank']:.2f}** |\n")
+            f.write(f"| Cosine Sim promedio | {m['avg_cosine_sim']:.4f} |\n")
+            f.write(f"| Latencia | {m['latency_ms']:.1f} ms |\n\n")
+
+            results = m.get("results", [])
+            if results:
+                f.write(f"### Fragmentos recuperados\n\n")
+                for j, r in enumerate(results, 1):
+                    level = ("Alta" if r["score"] >= 0.6
+                             else ("Media" if r["score"] >= 0.4 else "Baja"))
+                    f.write(
+                        f"**[{j}]** Similitud: `{r['score']:.4f}` ({level}) | "
+                        f"Rating: {r['rating']} ★ | "
+                        f"Sentiment: `{r['sentiment']}` | "
+                        f"Categoría: `{r['main_category']}` | "
+                        f"ASIN: `{r['parent_asin']}`\n\n"
+                    )
+                    text = r["chunk_text"]
+                    if len(text) > 420:
+                        text = text[:420] + "..."
+                    f.write(f"> {text}\n\n")
+            else:
+                f.write("_Sin resultados._\n\n")
+
+            f.write("---\n\n")
+
+    print(f"[✓] Ejemplos documentados → reports/query_examples.md  ({len(report)} queries)")
+    return str(md_path)
+
+
+# ─────────────────────────────────────────────────────────
+# Fix 2 — Exportar historial de runs de MLflow a CSV
+# ─────────────────────────────────────────────────────────
+def export_mlflow_runs(cfg: dict) -> str | None:
+    """
+    Exporta todos los runs del experimento MLflow a un CSV legible.
+    Permite evidenciar el tracking sin necesidad de mlflow ui.
+    """
+    import pandas as pd
+
+    try:
+        mlflow.set_tracking_uri(cfg["mlflow"]["tracking_uri"])
+        runs = mlflow.search_runs(
+            experiment_names=[cfg["mlflow"]["experiment_name"]],
+            order_by=["start_time DESC"],
+        )
+        if runs.empty:
+            print("[!] No se encontraron runs de MLflow — ejecuta primero los scripts.")
+            return None
+
+        wanted = [
+            "run_id", "status", "start_time",
+            "tags.mlflow.runName", "tags.stage", "tags.update_decision",
+            "metrics.mean_precision_at_k", "metrics.mean_mrr",
+            "metrics.mean_latency_ms", "metrics.num_chunks",
+            "metrics.build_time_sec", "metrics.index_age_days",
+            "metrics.avg_cosine_control", "metrics.needs_update",
+            "params.model_name", "params.chunk_size", "params.chunk_overlap",
+            "params.sample_size", "params.rebuild_strategy",
+        ]
+        cols = [c for c in wanted if c in runs.columns]
+        export = runs[cols].copy()
+        export.columns = [
+            c.replace("tags.", "").replace("metrics.", "").replace("params.", "")
+            for c in cols
+        ]
+
+        reports_dir = Path("reports")
+        reports_dir.mkdir(exist_ok=True)
+        csv_path = reports_dir / "mlflow_runs_summary.csv"
+        export.to_csv(csv_path, index=False, encoding="utf-8")
+        print(f"[✓] MLflow runs exportados: {len(runs)} runs → reports/mlflow_runs_summary.csv")
+        return str(csv_path)
+
+    except Exception as e:
+        print(f"[!] Error exportando MLflow: {e}")
+        return None
+
+
+# ─────────────────────────────────────────────────────────
 # Utilidades de visualización en consola
 # ─────────────────────────────────────────────────────────
 def print_results(query: str, results: list[dict], retriever: SemanticRetriever):
@@ -381,6 +489,8 @@ if __name__ == "__main__":
     print("\n\n[→] Ejecutando evaluación formal con MLflow...")
     report = run_evaluation(retriever, cfg)
     save_report(report, cfg)
+    save_query_examples(report, cfg)
+    export_mlflow_runs(cfg)
 
     # ── Resumen final ─────────────────────────────────────
     print("\n\n[RESUMEN DE EVALUACIÓN]")
@@ -399,4 +509,6 @@ if __name__ == "__main__":
           f"P@{top_k}={np.mean([v['precision_at_k'] for v in vals]):.2f}  "
           f"MRR={np.mean([v['reciprocal_rank'] for v in vals]):.2f}")
     print(f"\n[✓] Reportes en /reports/ | Tracking en MLflow")
-    print(f"→ Siguiente: streamlit run demo/app.py")
+    print(f"    → reports/query_examples.md       (texto real recuperado)")
+    print(f"    → reports/mlflow_runs_summary.csv (historial de experimentos)")
+    print(f"→ Siguiente: uvicorn demo.main:app --reload --port 7860")

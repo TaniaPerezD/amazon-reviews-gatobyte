@@ -1,0 +1,8 @@
+run_id,status,start_time,mlflow.runName,stage,update_decision,mean_precision_at_k,mean_mrr,mean_latency_ms,num_chunks,build_time_sec,index_age_days,avg_cosine_control,needs_update,model_name,chunk_size,chunk_overlap,sample_size,rebuild_strategy
+5614e25cfdf7480297f39392caf31d40,FINISHED,2026-06-23 03:41:12.324000+00:00,save_eval_reports,,,,,,,,,,,,,,,
+3fd9b0c869e148daabc81c58cc39bdf3,FINISHED,2026-06-23 03:41:12.129000+00:00,eval_retrieval_quality,evaluation,,0.8,0.9285714285714286,21.7264039175851,,,,,,,,,,
+119cb68505d145f08c44af6218b852e1,FINISHED,2026-06-22 23:59:26.793000+00:00,policy_check_20260622_2359,monitoring,KEEP,,,,,,0.0,0.7892,0.0,,,,,full
+7a7a4e4846f64fafa1c79bfc7b1b3b7f,FINISHED,2026-06-22 23:59:00.756000+00:00,baseline_vs_multilingual,baseline_comparison,,,,,,,,,,,,,,
+7ed21b7bfe234c4e8a8bd516f911c650,FINISHED,2026-06-22 23:58:26.749000+00:00,save_eval_reports,,,,,,,,,,,,,,,
+258fb7a7e56048e385df073813537cfe,FINISHED,2026-06-22 23:58:26.555000+00:00,eval_retrieval_quality,evaluation,,0.8,0.9285714285714286,22.429636546543666,,,,,,,,,,
+0c1919d4e4f94049a8d672c7c541c956,FINISHED,2026-06-22 23:58:04.199000+00:00,build_index_v_20260622_235803_f96d8826,indexing,,,,,61408.0,468.61,,,,paraphrase-multilingual-MiniLM-L12-v2,500,100,50000,
