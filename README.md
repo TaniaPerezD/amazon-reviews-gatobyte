@@ -135,7 +135,7 @@ Resultados sobre 7 queries de prueba en español (reseñas en inglés — cross-
 | pantalla y calidad de imagen | 1.00 | 1.00 | 0.725 | 17 ms |
 | **MEDIA** | **0.80** | **0.93** | — | **22 ms** |
 
-Todos los objetivos superados: Precision@K ≥ 0.60 ✅ · MRR ≥ 0.60 ✅ · Latencia < 200 ms ✅
+Todos los objetivos superados: Precision@K ≥ 0.60  · MRR ≥ 0.60  · Latencia < 200 ms 
 
 ---
 
@@ -172,10 +172,10 @@ Todos los objetivos superados: Precision@K ≥ 0.60 ✅ · MRR ≥ 0.60 ✅ · L
 
 | Requisito | Estado |
 |-----------|--------|
-| Modelo preentrenado en modo inferencia | ✅ `paraphrase-multilingual-MiniLM-L12-v2` solo para generar embeddings |
-| Sin fine-tuning ni entrenamiento desde cero | ✅ El modelo se usa tal como viene de HuggingFace |
-| Sin GPU dedicada | ✅ Corre en CPU; latencia < 50 ms por query |
-| Comparación con baseline no profundo | ✅ `src/04_baseline_comparison.py` — TF-IDF vs MiniLM |
+| Modelo preentrenado en modo inferencia |  `paraphrase-multilingual-MiniLM-L12-v2` solo para generar embeddings |
+| Sin fine-tuning ni entrenamiento desde cero | El modelo se usa tal como viene de HuggingFace |
+| Sin GPU dedicada | Corre en CPU; latencia < 50 ms por query |
+| Comparación con baseline no profundo |  `src/04_baseline_comparison.py` — TF-IDF vs MiniLM |
 
 ---
 
