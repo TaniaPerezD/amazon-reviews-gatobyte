@@ -51,6 +51,10 @@ function setupTabs() {
       if (target === "performance")  loadEval();
       if (target === "explorer")     loadFilters().then(() => loadChunks());
       if (target === "status")       loadStatus();
+
+      if (target === "sentiment" && window.loadSentiment) window.loadSentiment();
+      if (target === "embeddings" && window.loadEmbeddings) window.loadEmbeddings();
+      if (target === "dashboard" && window.loadDashboard) window.loadDashboard();
     });
   });
 }
