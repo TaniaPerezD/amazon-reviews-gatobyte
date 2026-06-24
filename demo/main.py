@@ -1,5 +1,4 @@
 import sys, os, json, pickle, time, datetime
-os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")   # evita segfault torch+lightgbm en macOS
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from pathlib import Path

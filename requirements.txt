@@ -1,10 +1,6 @@
-# GATOBYTE — Amazon Reviews Sentiment Analysis
+# GATOBYTE — Mini Proyecto MLOps + RAG
 # Todas las dependencias corren en CPU sin GPU dedicada
-# Compatible con Python 3.12
-#
-# IMPORTANTE: torch debe instalarse por separado con:
-#   pip install torch==2.2.2 --index-url https://download.pytorch.org/whl/cpu
-# No incluir torch en pip install -r requirements.txt en Windows CPU
+# Compatible con Python 3.10+
 
 # ── Embeddings (modelo preentrenado, solo inferencia) ──
 sentence-transformers==2.7.0   # all-MiniLM-L6-v2 (~80 MB, CPU)
@@ -19,31 +15,18 @@ mlflow==2.13.0
 pyyaml==6.0.1                  # lectura de rag_config.yaml
 
 # ── Demo interactiva ──────────────────────────────────
-fastapi==0.100.0               # API REST
-uvicorn==0.23.2                # servidor ASGI para FastAPI
+fastapi==0.100.0                # API REST
+uvicorn==0.23.2                 # servidor ASGI para FastAPI
 
 # ── Procesamiento de datos ────────────────────────────
 pandas==2.2.2
 numpy==1.26.4
 pyarrow==15.0.2                # lectura de archivos .parquet (mlflow 2.13 requires <16)
-scipy                          # hstack para matrices sparse del pipeline CPU
-
-# ── Machine Learning ──────────────────────────────────
-scikit-learn                   # pipeline CPU, StandardScaler, TfidfVectorizer
-lightgbm                       # modelo ganador fase ML
-joblib                         # carga de modelos .joblib
-
-# ── Clasificador de sentimiento — limpieza de texto ───
-contractions                   # expansión de contracciones en pipeline CPU
-
-# ── Transformer (DistilBERT + LoRA, CPU) ─────────────
-# torch==2.2.2 — instalar ANTES con:
-#   pip install torch==2.2.2 --index-url https://download.pytorch.org/whl/cpu
-transformers>=4.40.0           # DistilBertForSequenceClassification
-peft>=0.14.0                   # carga del adaptador LoRA
-accelerate>=0.21.0             # requerido por peft
-safetensors>=0.4.3             # carga de adapter_model.safetensors
 
 # ── Visualizaciones (notebook exploratorio) ───────────
 matplotlib==3.9.0
 seaborn==0.13.2
+
+# ── Ya disponibles en el entorno del proyecto ─────────
+# scikit-learn  (usado en Fases 2 y 3)
+# torch         (instalado por sentence-transformers, CPU only)
