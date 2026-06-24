@@ -24,9 +24,10 @@ app.add_middleware(
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 # ── ROUTERS ──────────────────────────────────────────
-from demo.routes import sentiment, embeddings
+from demo.routes import sentiment, embeddings, metrics
 app.include_router(sentiment.router)
 app.include_router(embeddings.router)
+app.include_router(metrics.router)
 
 try:
     from demo.routes import rag
@@ -42,4 +43,4 @@ async def root():
 
 # ─────────────────────────────────────────────────────
 if __name__ == "__main__":
-    uvicorn.run("demo.main:app", host="0.0.0.0", port=7861, reload=False)
+    uvicorn.run("demo.main:app", host="0.0.0.0", port=7862, reload=False)

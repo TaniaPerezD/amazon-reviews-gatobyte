@@ -45,7 +45,7 @@ const MOCK_METRICS = {
 };
 
 // Cambia a false cuando /api/metrics esté listo
-const DASH_USE_MOCK = true;
+const DASH_USE_MOCK = false;
 
 // ── INIT ────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
@@ -69,13 +69,20 @@ async function loadDashboard() {
       // ── ENDPOINTS REALES ──
       // GET /api/metrics/baseline  → mismo shape que MOCK_METRICS.baseline
       // GET /api/metrics/transformer → mismo shape que MOCK_METRICS.transformer
-      const [resB, resT] = await Promise.all([
-        fetch("/api/metrics/baseline"),
-        fetch("/api/metrics/transformer"),
-      ]);
+      const res = await fetch("/api/metrics");
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+
+      // Normalizar claves — el JSON usa bal_accuracy, el dashboard también, ok
       metrics = {
-        baseline:    resB.ok ? await resB.json() : { ...MOCK_METRICS.baseline, available: false },
-        transformer: resT.ok ? await resT.json() : { ...MOCK_METRICS.transformer, available: false },
+        baseline: {
+          ...MOCK_METRICS.baseline,   // defaults para confusion_matrix y model_display
+          ...data.baseline,
+        },
+        transformer: {
+          ...MOCK_METRICS.transformer,
+          ...data.transformer,
+        },
       };
     }
 
@@ -205,6 +212,15 @@ function renderModelCard(modelData, modelKey) {
 }
 
 function miniMetric(label, val, target, iconName) {
+  // Si val es null o undefined, mostrar pendiente
+  if (val == null) {
+    return `
+    <div class="mini-metric">
+      <div class="mini-metric-val" style="color:var(--text-3);">—</div>
+      <div class="mini-metric-label">${label}</div>
+      <div class="mini-metric-target" style="color:var(--text-3);">≥ ${target}</div>
+    </div>`;
+  }
   const ok = val >= target;
   const color = ok ? "var(--green-dk)" : val >= target * 0.9 ? "var(--amber-dk)" : "var(--red-dk)";
   return `
