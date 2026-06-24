@@ -15,8 +15,8 @@ __pycache__/
 
 # Datos crudos y procesados (demasiado grandes para GitHub)
 data/*.parquet
-data/*.csv
-data/*.json
+data/*
+data/*
 data/*.jsonl
 data/*.gz
 data/*.zip
