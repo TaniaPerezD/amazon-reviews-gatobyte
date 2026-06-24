@@ -295,13 +295,13 @@ Cada decisión (KEEP / REBUILD) queda registrada en MLflow con los valores exact
 
 ## Integrantes
 
-| Nombre | Rol |
+| Nombre 
 |---|---|
-| Adriana Nathalie Rocha Vedia | — |
-| Ivonne Micaela Colque Murillo | — |
-| Dilan Obed Mamani Pamuri | — |
-| Tania Morelia Pérez Dick | — |
-| Ignacio Retamozo Torrez | — |
+| Adriana Nathalie Rocha Vedia |
+| Ivonne Micaela Colque Murillo |
+| Dilan Obed Mamani Pamuri | 
+| Tania Morelia Pérez Dick | 
+| Ignacio Retamozo Torrez |
 
 <div align="center">
   <sub>Proyecto académico · Machine Learning · UCB San Pablo · 2026</sub>
