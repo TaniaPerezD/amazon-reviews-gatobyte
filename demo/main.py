@@ -4,7 +4,38 @@
  /demo/main.py
 =============================================================
 """
+import sys, os, json, pickle, time, datetime
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
+# ── REGISTRO DE CLASES PARA JOBLIB ──────────────────
+# Debe ir ANTES de importar los routers que cargan joblib.
+# El pipeline fue serializado con __main__ como módulo,
+# asi que las clases deben estar en sys.modules['__main__'].
+import re, unicodedata
+import pandas as pd
+from sklearn.base import BaseEstimator, TransformerMixin
+
+class CpuFullPreprocessor(BaseEstimator, TransformerMixin):
+    def __init__(self, *args, **kwargs): pass
+    def fit(self, X, y=None): return self
+    def transform(self, X): return X
+
+class CpuPreprocessor(BaseEstimator, TransformerMixin):
+    def __init__(self, *args, **kwargs): pass
+    def fit(self, X, y=None): return self
+    def transform(self, X): return X
+    
+class CpuTextCleaner(BaseEstimator, TransformerMixin):
+    def __init__(self, *args, **kwargs): pass
+    def fit(self, X, y=None): return self
+    def transform(self, X): return X
+
+# Registrar en __main__ (que es este mismo archivo cuando uvicorn lo carga)
+import __main__
+__main__.CpuFullPreprocessor = CpuFullPreprocessor
+__main__.CpuPreprocessor     = CpuPreprocessor
+__main__.CpuTextCleaner      = CpuTextCleaner
+# ────────────────────────────────────────────────────
 import sys
 import os
 from pathlib import Path
@@ -19,7 +50,15 @@ from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 # 1. IMPORTAMOS TUS ROUTERS
-from demo.routes import rag, sentiment, embeddings
+# DESPUES
+from demo.routes import sentiment, embeddings
+
+try:
+    from demo.routes import rag
+    app.include_router(rag.router)
+    print("Router RAG cargado.")
+except Exception as e:
+    print(f"Router RAG no disponible: {e}")
 
 BASE_DIR = Path(__file__).parent.parent
 STATIC_DIR = Path(__file__).parent / "static"
