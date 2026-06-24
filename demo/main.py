@@ -1,4 +1,7 @@
 import sys, os, json, pickle, time, datetime
+os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")  # evita segfault torch+lightgbm en macOS
+os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")      # no descargar nada de HuggingFace
+os.environ.setdefault("HF_HUB_OFFLINE", "1")
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from pathlib import Path

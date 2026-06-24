@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 from pathlib import Path
 import joblib, sys, warnings, time
+import lightgbm  # debe cargarse antes de torch en macOS para evitar conflicto OpenMP
 import pandas as pd
 import traceback
 import torch
@@ -33,21 +34,34 @@ except FileNotFoundError as e:
     print(f"Advertencia: {e}")
     cpu_pipeline = modelo_base = le_base = CLASSES = None
 
-# ── TRANSFORMER — carga al arrancar ─────────────────
-try:
-    _lora_path = BASE_DIR / "models/distilbert_lora"
-    _db_device = "cuda" if torch.cuda.is_available() else "cpu"
-    _db_tok    = DistilBertTokenizerFast.from_pretrained(str(_lora_path))
-    _base      = DistilBertForSequenceClassification.from_pretrained(
-        "distilbert-base-uncased", num_labels=3, ignore_mismatched_sizes=True
-    )
-    _db_model  = PeftModel.from_pretrained(_base, str(_lora_path)).to(_db_device)
-    _db_model.eval()
-    print(f"DistilBERT cargado en {_db_device}")
-except Exception as e:
-    print(f"DistilBERT no disponible: {e}")
-    _db_model = _db_tok = None
-    _db_device = "cpu"
+# ── TRANSFORMER — carga lazy al primer uso ───────────
+_lora_path = BASE_DIR / "models/distilbert_lora"
+_db_device = "cuda" if torch.cuda.is_available() else "cpu"
+_db_model  = None
+_db_tok    = None
+_db_loaded = False
+
+def _load_transformer():
+    global _db_model, _db_tok, _db_loaded
+    if _db_loaded:
+        return
+    try:
+        print("Cargando DistilBERT + LoRA (primera vez, puede tardar ~60s)...")
+        # Evitar conflicto OpenMP entre lightgbm y torch en macOS
+        torch.set_num_threads(1)
+        _db_tok   = DistilBertTokenizerFast.from_pretrained(str(_lora_path), local_files_only=True)
+        _base     = DistilBertForSequenceClassification.from_pretrained(
+            "distilbert-base-uncased", num_labels=3, ignore_mismatched_sizes=True,
+            local_files_only=True,
+        )
+        _db_model = PeftModel.from_pretrained(_base, str(_lora_path), local_files_only=True).to(_db_device)
+        _db_model.eval()
+        print(f"DistilBERT cargado en {_db_device}")
+    except Exception as e:
+        print(f"DistilBERT no disponible: {e}")
+        _db_model = _db_tok = None
+    finally:
+        _db_loaded = True
 
 
 # ── ENDPOINT ─────────────────────────────────────────
@@ -97,6 +111,7 @@ def predict(body: dict):
     # ── TRANSFORMER ───────────────────────────────────
     if model == "transformer":
         try:
+            _load_transformer()
             if not CLASSES:
                 return {"error": "Clases no cargadas."}
             if _db_model is None or _db_tok is None:

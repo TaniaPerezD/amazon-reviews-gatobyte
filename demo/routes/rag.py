@@ -68,6 +68,8 @@ except FileNotFoundError as e:
 @router.get("/info")  # Antes era @app.get("/api/info")
 async def get_info():
     """Información del índice activo."""
+    if manifest is None:
+        return {"error": "Índice RAG no disponible. Corre: python src/01_build_index.py"}
     created_str = manifest.get("created_at_utc", "")
     age_days = 0
     if created_str:
@@ -98,6 +100,8 @@ async def search(
     min_score: float = Query(0.0, ge=0.0, le=1.0),
 ):
     """Búsqueda semántica sobre el índice FAISS."""
+    if model is None or index is None or chunks is None:
+        return {"error": "Índice RAG no disponible. Corre: python src/01_build_index.py", "results": []}
     t0 = time.time()
 
     q_vec = model.encode(
