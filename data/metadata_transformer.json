@@ -1,0 +1,22 @@
+{
+  "modelo_ganador": "DistilBERT + LoRA",
+  "tipo_modelo": "Transformer",
+  "arquitectura": "DistilBERT-base-uncased + LoRA (PEFT)",
+  "metricas_val": {
+    "f1_macro":    0.7272,
+    "f1_weighted": null,
+    "bal_accuracy": 0.7833,
+    "roc_auc":     0.9483,
+    "score_compuesto": 0.8104
+  },
+  "metricas_test": {
+    "f1_macro":    0.7272,
+    "f1_weighted": null,
+    "bal_accuracy": 0.7833,
+    "roc_auc":     0.9483,
+    "score_compuesto": 0.8104
+  },
+  "clases": ["negative", "neutral", "positive"],
+  "pr_auc": 0.7762,
+  "f1_neutral": 0.4266
+} 

@@ -1,0 +1,94 @@
+{
+  "nota": "Tabla maestra — todos los modelos ordenados por Score Compuesto (NB-01c)",
+  "ganador": "DistilBERT+LoRA",
+  "modelos": [
+    {
+      "nombre": "DistilBERT+LoRA",
+      "representacion": "DistilBERT contextual",
+      "grupo": "Transformer LoRA",
+      "f1_macro": 0.7272,
+      "bal_accuracy": 0.7833,
+      "roc_auc": 0.9483,
+      "pr_auc": 0.7762,
+      "f1_neutral": 0.4266,
+      "score_compuesto": 0.8104
+    },
+    {
+      "nombre": "Stacking",
+      "representacion": "Ensemble (TF-IDF+Emb+DistilBERT)",
+      "grupo": "Stacking Ensemble",
+      "f1_macro": 0.7250,
+      "bal_accuracy": 0.7811,
+      "roc_auc": 0.9470,
+      "pr_auc": 0.7753,
+      "f1_neutral": 0.4251,
+      "score_compuesto": 0.8084
+    },
+    {
+      "nombre": "LightGBM TF-IDF",
+      "representacion": "TF-IDF + Tabular",
+      "grupo": "Baseline TF-IDF",
+      "f1_macro": 0.6945,
+      "bal_accuracy": 0.7575,
+      "roc_auc": 0.9320,
+      "pr_auc": 0.7800,
+      "f1_neutral": 0.3860,
+      "score_compuesto": 0.7847
+    },
+    {
+      "nombre": "XGBoost TF-IDF",
+      "representacion": "TF-IDF + Tabular",
+      "grupo": "Baseline TF-IDF",
+      "f1_macro": 0.6790,
+      "bal_accuracy": 0.7492,
+      "roc_auc": 0.9310,
+      "pr_auc": 0.7400,
+      "f1_neutral": 0.3800,
+      "score_compuesto": 0.7757
+    },
+    {
+      "nombre": "LogReg TF-IDF",
+      "representacion": "TF-IDF + Tabular",
+      "grupo": "Baseline TF-IDF",
+      "f1_macro": 0.6910,
+      "bal_accuracy": 0.7200,
+      "roc_auc": 0.9425,
+      "pr_auc": 0.7500,
+      "f1_neutral": 0.3000,
+      "score_compuesto": 0.7752
+    },
+    {
+      "nombre": "LogReg Emb",
+      "representacion": "MiniLM-384+Tab",
+      "grupo": "Embeddings MiniLM",
+      "f1_macro": 0.6483,
+      "bal_accuracy": 0.7100,
+      "roc_auc": 0.9045,
+      "pr_auc": 0.6927,
+      "f1_neutral": 0.3215,
+      "score_compuesto": 0.7437
+    },
+    {
+      "nombre": "LightGBM Emb",
+      "representacion": "MiniLM-384+Tab",
+      "grupo": "Embeddings MiniLM",
+      "f1_macro": 0.5941,
+      "bal_accuracy": 0.6964,
+      "roc_auc": 0.9009,
+      "pr_auc": 0.7021,
+      "f1_neutral": 0.2686,
+      "score_compuesto": 0.7168
+    },
+    {
+      "nombre": "Naive Bayes",
+      "representacion": "TF-IDF + Tabular",
+      "grupo": "Baseline TF-IDF",
+      "f1_macro": 0.5574,
+      "bal_accuracy": 0.5574,
+      "roc_auc": 0.9000,
+      "pr_auc": 0.6800,
+      "f1_neutral": 0.0600,
+      "score_compuesto": 0.6602
+    }
+  ]
+} 
