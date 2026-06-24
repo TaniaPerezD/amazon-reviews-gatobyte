@@ -1,5 +1,5 @@
 # =============================================================
-#  GATOBYTE — Mini Proyecto MLOps + RAG
+#  GATOBYTE
 #  /config/rag_config.yaml
 # =============================================================
 
@@ -18,7 +18,7 @@ data:
   sample_size: 50000
   random_seed: 42
 
-# ── Chunking con overlap (del ejercicio del docente) ──────
+# ── Chunking con overlap ──────
 chunking:
   chunk_size: 500
   chunk_overlap: 100
