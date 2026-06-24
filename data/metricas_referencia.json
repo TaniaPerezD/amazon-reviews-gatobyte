@@ -1,0 +1,53 @@
+{
+  "nota": "Metricas de referencia del notebook NB-01c — conjunto de test",
+  "modelos_baseline": {
+    "Naive Bayes": {
+      "f1_macro": 0.5574,
+      "f1_weighted": 0.7200,
+      "accuracy": 0.7300,
+      "balanced_accuracy": 0.5574,
+      "roc_auc_macro": 0.9000,
+      "pr_auc_macro": 0.6800,
+      "f1_negative": 0.6800,
+      "f1_neutral": 0.0600,
+      "f1_positive": 0.9300,
+      "score_compuesto": 0.6922
+    },
+    "LogReg TF-IDF": {
+      "f1_macro": 0.6910,
+      "f1_weighted": 0.8700,
+      "accuracy": 0.8400,
+      "balanced_accuracy": 0.7200,
+      "roc_auc_macro": 0.9425,
+      "pr_auc_macro": 0.7500,
+      "f1_negative": 0.7800,
+      "f1_neutral": 0.3000,
+      "f1_positive": 0.9400,
+      "score_compuesto": 0.7701
+    },
+    "XGBoost TF-IDF": {
+      "f1_macro": 0.6790,
+      "f1_weighted": 0.8500,
+      "accuracy": 0.8000,
+      "balanced_accuracy": 0.7492,
+      "roc_auc_macro": 0.9310,
+      "pr_auc_macro": 0.7400,
+      "f1_negative": 0.7700,
+      "f1_neutral": 0.3800,
+      "f1_positive": 0.8700,
+      "score_compuesto": 0.7711
+    },
+    "LightGBM TF-IDF": {
+      "f1_macro": 0.6945,
+      "f1_weighted": 0.8730,
+      "accuracy": 0.8175,
+      "balanced_accuracy": 0.7575,
+      "roc_auc_macro": 0.9320,
+      "pr_auc_macro": 0.7800,
+      "f1_negative": 0.7900,
+      "f1_neutral": 0.3860,
+      "f1_positive": 0.9000,
+      "score_compuesto": 0.7769
+    }
+  }
+} 
