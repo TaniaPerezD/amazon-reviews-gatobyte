@@ -1,0 +1,27 @@
+{
+  "modelo_ganador": "DistilBERT+LoRA",
+  "baseline_referencia": "LightGBM TF-IDF *",
+  "mejoras_absolutas": {
+    "f1_macro": 0.0327,
+    "f1_neutral": 0.0406,
+    "balanced_acc": 0.0258,
+    "score_compuesto": 0.0257
+  },
+  "cuando_mejora_transformer": [
+    "Ironía y sarcasmo: el modelo contextual captura significado real que TF-IDF clasifica erróneamente.",
+    "Textos cortos de alta carga semántica: embeddings agrupan sinónimos en un espacio común.",
+    "Negaciones complejas: \"not bad\" se procesa como unidad semántica próxima a lo positivo.",
+    "Reseñas mixtas: DistilBERT captura matices que la frecuencia de términos no distingue."
+  ],
+  "cuando_no_mejora_transformer": [
+    "Vocabulario técnico muy específico: MiniLM fue entrenado en corpus general.",
+    "Reseñas muy largas (>300 tokens): se truncan a 128 tokens, perdiendo contexto.",
+    "Velocidad: TF-IDF+LightGBM ~2ms; MiniLM ~25ms; DistilBERT ~200ms.",
+    "Memoria en producción: DistilBERT (255MB) + MiniLM (80MB) vs TF-IDF (<20MB)."
+  ],
+  "recomendacion": {
+    "alto_volumen_tiempo_real": "LightGBM TF-IDF (latencia < 5ms)",
+    "calidad_textos_ambiguos": "DistilBERT+LoRA (mejor score compuesto)",
+    "equilibrio": "LightGBM Embeddings (calidad semántica + velocidad razonable)"
+  }
+}
