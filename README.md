@@ -15,9 +15,8 @@ El pipeline sigue la metodología CRISP-DM e incluye tracking con MLflow, versio
 ## Estructura del repositorio
 
 ```
-rag_v2/
 ├── data/
-│   ├── sample_ml.parquet          ← dataset (50 000 reseñas de Electronics)
+│   ├── sample_ml.parquet          ← dataset
 │   └── FUENTE.md                  ← procedencia y descripción del dataset
 ├── src/
 │   ├── 01_build_index.py          ← Data Prep + Embeddings + FAISS + MLflow
@@ -135,7 +134,7 @@ Resultados sobre 7 queries de prueba en español (reseñas en inglés — cross-
 | pantalla y calidad de imagen | 1.00 | 1.00 | 0.725 | 17 ms |
 | **MEDIA** | **0.80** | **0.93** | — | **22 ms** |
 
-Todos los objetivos superados: Precision@K ≥ 0.60 ✅ · MRR ≥ 0.60 ✅ · Latencia < 200 ms ✅
+Todos los objetivos superados: Precision@K ≥ 0.60  · MRR ≥ 0.60  · Latencia < 200 ms 
 
 ---
 
@@ -168,38 +167,14 @@ Todos los objetivos superados: Precision@K ≥ 0.60 ✅ · MRR ≥ 0.60 ✅ · L
 
 ---
 
-## Política del Transformer (cumplimiento — sección 4.1)
-
-| Requisito | Estado |
-|-----------|--------|
-| Modelo preentrenado en modo inferencia | ✅ `paraphrase-multilingual-MiniLM-L12-v2` solo para generar embeddings |
-| Sin fine-tuning ni entrenamiento desde cero | ✅ El modelo se usa tal como viene de HuggingFace |
-| Sin GPU dedicada | ✅ Corre en CPU; latencia < 50 ms por query |
-| Comparación con baseline no profundo | ✅ `src/04_baseline_comparison.py` — TF-IDF vs MiniLM |
-
----
-
 ## Dataset
 
 **Amazon Reviews 2023** — subconjunto de Electronics  
 McAuley Lab, UC San Diego · Hou et al., 2024 (arXiv:2403.03952)
 
-- 50 000 reseñas muestreadas aleatoriamente (`random_seed=42`)
+- 50 000 (para el desarollo del rag) reseñas muestreadas aleatoriamente (`random_seed=42`) 
 - 61 408 chunks generados (chunk_size=500, overlap=100)
 - Embeddings de dimensión 384
-- Período: mayo 1996 – septiembre 2023
 
 Ver `data/FUENTE.md` para detalles completos de procedencia y columnas.
 
----
-
-## Cobertura de la rúbrica
-
-| Criterio | Pts | Implementación |
-|----------|-----|----------------|
-| Pipeline reproducible y MLOps mínimo viable | 20 | `src/01_build_index.py` parametrizado desde `config/rag_config.yaml`, seed fijo |
-| Tracking y versionado | 20 | MLflow en los 4 scripts; índice versionado en `models/faiss_index/v_YYYYMMDD_HASH/` |
-| Recuperación semántica | 25 | FAISS + MiniLM multilingüe; queries en español sobre corpus en inglés |
-| Demo funcional | 20 | FastAPI + frontend con búsqueda, explorador de chunks, métricas de evaluación y estado del sistema |
-| Monitoreo y reentrenamiento | 15 | `src/03_update_policy.py`: 3 triggers, decisión KEEP/REBUILD en MLflow, rotación automática de versiones |
-| **TOTAL** | **100** | |

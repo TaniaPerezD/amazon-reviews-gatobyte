@@ -24,6 +24,10 @@
         <button class="tab-btn" data-tab="performance" role="tab"><i data-lucide="bar-chart-2"></i> Rendimiento</button>
         <button class="tab-btn" data-tab="explorer" role="tab"><i data-lucide="database"></i> Explorar índice</button>
         <button class="tab-btn" data-tab="status" role="tab"><i data-lucide="settings"></i> Sistema</button>
+        
+        <button class="tab-btn" data-tab="sentiment" role="tab"><i data-lucide="smile"></i> Sentimiento</button>
+        <button class="tab-btn" data-tab="dashboard" role="tab"><i data-lucide="layout-dashboard"></i> Dashboard ML</button>
+        <button class="tab-btn" data-tab="embeddings" role="tab"><i data-lucide="scatter-chart"></i> UMAP</button>
       </nav>
     </div>
   </header>
@@ -263,7 +267,64 @@
         <div class="loading-state"><span class="spinner"></span> Cargando estado…</div>
       </div>
     </section>
+    
+    <section class="tab-panel" id="tab-sentiment">
+      <div class="panel-header">
+        <h2>Clasificador de Sentimiento</h2>
+        <p>Prueba los modelos de clasificación de texto en tiempo real.</p>
+      </div>
 
+      <div class="sentiment-layout" style="max-width: 800px; margin: 0 auto; padding: 20px 0;">
+        
+        <div class="scard sentiment-controls">
+          <div class="model-toggle" style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <button class="model-toggle-btn active btn-secondary" data-model="baseline">Baseline (LightGBM)</button>
+            <button class="model-toggle-btn btn-secondary" data-model="transformer">Transformer (DistilBERT)</button>
+          </div>
+
+          <label for="sentimentInput" style="display:block; margin-bottom:8px; font-weight:600; color:#1E293B;">Escribe una reseña:</label>
+          <textarea 
+            id="sentimentInput" 
+            class="search-input" 
+            rows="4" 
+            style="width: 100%; resize: vertical; padding: 12px; border: 1px solid #CBD5E1; border-radius: 8px;"
+            placeholder="Ej: Me encantó este producto, la batería dura muchísimo..."></textarea>
+
+          <div style="margin-top: 12px;">
+            <span style="font-size: 13px; color: #64748b; font-weight: 500;">Ejemplos rápidos:</span>
+            <div id="exampleChips" style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
+              </div>
+          </div>
+
+          <button id="classifyBtn" class="btn-classify" style="margin-top: 24px; width: 100%; justify-content: center; height: 50px;">
+            <i data-lucide="zap"></i> Clasificar texto
+          </button>
+        </div>
+
+        <div id="classifyResult" style="margin-top: 24px;">
+          <div class="empty-state">
+            <div class="empty-icon"><i data-lucide="smile"></i></div>
+            <h3>Esperando texto</h3>
+            <p>Escribe una reseña arriba y haz clic en Clasificar para ver el análisis.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="tab-panel" id="tab-dashboard">
+      <div class="panel-header">
+        <h2>Dashboard de Métricas ML</h2>
+        <p>Comparativa de rendimiento entre el modelo Baseline y el Transformer.</p>
+      </div>
+      
+      <div id="dashboardContent">
+        <div class="empty-state">
+          <div class="spinner"></div>
+          <p>Cargando dashboard...</p>
+        </div>
+      </div>
+    </section>
   </main>
 
   <footer class="site-footer">
@@ -276,5 +337,7 @@
 
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
   <script src="/static/app.js"></script>
+  <script src="/static/sentiment.js"></script>
+  <script src="/static/dashboard.js"></script>
 </body>
 </html>
