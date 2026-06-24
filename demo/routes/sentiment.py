@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 from pathlib import Path
 import joblib, sys, warnings, time
+import lightgbm  # debe cargarse antes de torch en macOS para evitar conflicto OpenMP
 import pandas as pd
 import traceback
 import torch
