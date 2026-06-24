@@ -1,0 +1,12 @@
+Modelo: DistilBERT-LoRA
+Fecha: 2026-06-24T07:40:10.116482
+
+              precision    recall  f1-score   support
+
+    negative       0.85      0.80      0.82     31803
+     neutral       0.31      0.66      0.43     11040
+    positive       0.98      0.89      0.93    107157
+
+    accuracy                           0.85    150000
+   macro avg       0.71      0.78      0.73    150000
+weighted avg       0.90      0.85      0.87    150000

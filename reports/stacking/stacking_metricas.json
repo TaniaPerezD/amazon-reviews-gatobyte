@@ -1,0 +1,118 @@
+{
+  "validacion": {
+    "nombre": "Stacking",
+    "timestamp": "2026-06-24T08:02:53.603788",
+    "tiempo_train_s": 3.4,
+    "f1_macro": 0.7629,
+    "f1_weighted": 0.885,
+    "accuracy": 0.8679,
+    "balanced_accuracy": 0.8335,
+    "roc_auc_macro": 0.9646,
+    "pr_auc_macro": 0.8328,
+    "por_clase": {
+      "negative": {
+        "f1": 0.8496,
+        "precision": 0.8702,
+        "recall": 0.8299,
+        "pr_auc": 0.9356,
+        "soporte": 31802
+      },
+      "neutral": {
+        "f1": 0.5044,
+        "precision": 0.3721,
+        "recall": 0.7827,
+        "pr_auc": 0.5702,
+        "soporte": 11040
+      },
+      "positive": {
+        "f1": 0.9347,
+        "precision": 0.9866,
+        "recall": 0.888,
+        "pr_auc": 0.9926,
+        "soporte": 107158
+      }
+    },
+    "analisis_error": {
+      "error_critico_neg_a_pos": 530,
+      "error_critico_pct": 1.67,
+      "total_errores": 19810,
+      "tasa_error_pct": 13.21,
+      "confusion_matrix": [
+        [
+          26392,
+          4880,
+          530
+        ],
+        [
+          1638,
+          8641,
+          761
+        ],
+        [
+          2299,
+          9702,
+          95157
+        ]
+      ]
+    },
+    "score_compuesto": 0.8446
+  },
+  "test": {
+    "nombre": "Stacking",
+    "timestamp": "2026-06-24T08:02:53.866715",
+    "tiempo_train_s": null,
+    "f1_macro": 0.725,
+    "f1_weighted": 0.8697,
+    "accuracy": 0.8498,
+    "balanced_accuracy": 0.7811,
+    "roc_auc_macro": 0.947,
+    "pr_auc_macro": 0.7753,
+    "por_clase": {
+      "negative": {
+        "f1": 0.8195,
+        "precision": 0.84,
+        "recall": 0.7999,
+        "pr_auc": 0.9102,
+        "soporte": 31803
+      },
+      "neutral": {
+        "f1": 0.4251,
+        "precision": 0.3137,
+        "recall": 0.6593,
+        "pr_auc": 0.4249,
+        "soporte": 11040
+      },
+      "positive": {
+        "f1": 0.9304,
+        "precision": 0.9818,
+        "recall": 0.8842,
+        "pr_auc": 0.9907,
+        "soporte": 107157
+      }
+    },
+    "analisis_error": {
+      "error_critico_neg_a_pos": 558,
+      "error_critico_pct": 1.75,
+      "total_errores": 22534,
+      "tasa_error_pct": 15.02,
+      "confusion_matrix": [
+        [
+          25440,
+          5805,
+          558
+        ],
+        [
+          2559,
+          7279,
+          1202
+        ],
+        [
+          2287,
+          10123,
+          94747
+        ]
+      ]
+    },
+    "score_compuesto": 0.8084
+  }
+}

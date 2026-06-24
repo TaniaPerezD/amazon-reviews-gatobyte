@@ -1,0 +1,9 @@
+Modelo,Representacion,F1-Macro,F1-Weighted,Accuracy,Balanced-Acc,ROC-AUC,PR-AUC,F1-Negative,F1-Neutral,F1-Positive,Score-Compuesto,Grupo
+DistilBERT+LoRA,DistilBERT contextual,0.7272,0.8711,0.8511,0.7833,0.9483,0.7762,0.8239,0.4266,0.9309,0.8104,Transformer LoRA
+Stacking,Ensemble (TF-IDF+Emb+DistilBERT),0.725,0.8697,0.8498,0.7811,0.947,0.7753,0.8195,0.4251,0.9304,0.8084,Stacking Ensemble
+LightGBM TF-IDF *,TF-IDF + Tabular,0.6945,0.873,0.8175,0.7575,0.932,0.78,0.79,0.386,0.9,0.7847,Baseline TF-IDF
+XGBoost TF-IDF,TF-IDF + Tabular,0.679,0.85,0.8,0.7492,0.931,0.74,0.77,0.38,0.87,0.7757,Baseline TF-IDF
+LogReg TF-IDF,TF-IDF + Tabular,0.691,0.87,0.84,0.72,0.9425,0.75,0.78,0.3,0.94,0.7752,Baseline TF-IDF
+LogReg Emb,MiniLM-384+Tab,0.6483,0.8097,0.7757,0.71,0.9045,0.6927,0.7438,0.3215,0.8796,0.7437,Embeddings MiniLM
+LightGBM Emb,MiniLM-384+Tab,0.5941,0.7367,0.6687,0.6964,0.9009,0.7021,0.7253,0.2686,0.7884,0.7168,Embeddings MiniLM
+Naive Bayes,TF-IDF + Tabular,0.5574,0.72,0.73,0.5574,0.9,0.68,0.68,0.06,0.93,0.6602,Baseline TF-IDF
