@@ -36,5 +36,14 @@
     "pct_new_data": 0.0,
     "decision": "KEEP",
     "triggers": []
+  },
+  {
+    "checked_at_utc": "2026-06-24 17:08:18",
+    "index_version": "v_20260624_170627_f96d8826",
+    "age_days": 0.0,
+    "avg_cosine_control": 0.7892,
+    "pct_new_data": 0.0,
+    "decision": "KEEP",
+    "triggers": []
   }
 ]

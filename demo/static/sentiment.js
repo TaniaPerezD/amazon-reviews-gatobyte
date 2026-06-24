@@ -197,14 +197,14 @@ function renderClassifyResult(data, inputText) {
     return `
     <div class="prob-row ${isWinner ? "prob-winner" : ""}">
       <div class="prob-label">
-        ${isWinner ? `<i data-lucide="${emojiMap[barCls]}" style="width:13px;height:13px;flex-shrink:0;"></i>` : ""} 
+        ${isWinner ? `<i data-lucide="${emojiMap[barCls]}" style="width:13px;height:13px;flex-shrink:0;"></i>` : ""}
         <span>${labelMap[barCls] || key}</span>
-        ${isWinner ? `<span class="prob-winner-tag">Predicción</span>` : ""}
       </div>
       <div class="prob-track">
         <div class="prob-fill" style="width:${pct}%;background:${barColor};"></div>
       </div>
       <span class="prob-pct">${pct}%</span>
+      ${isWinner ? `<span class="prob-winner-tag">Predicción</span>` : ""}
     </div>`;
   }).join("");
 
