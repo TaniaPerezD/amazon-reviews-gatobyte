@@ -14,7 +14,7 @@
 | Precision@5 | **0.40** |
 | MRR | **0.50** |
 | Cosine Sim promedio | 0.6632 |
-| Latencia | 19.3 ms |
+| Latencia | 24.5 ms |
 
 ### Fragmentos recuperados
 
@@ -47,7 +47,7 @@
 | Precision@5 | **1.00** |
 | MRR | **1.00** |
 | Cosine Sim promedio | 0.7943 |
-| Latencia | 44.0 ms |
+| Latencia | 73.0 ms |
 
 ### Fragmentos recuperados
 
@@ -80,7 +80,7 @@
 | Precision@5 | **0.80** |
 | MRR | **1.00** |
 | Cosine Sim promedio | 0.6534 |
-| Latencia | 17.9 ms |
+| Latencia | 20.0 ms |
 
 ### Fragmentos recuperados
 
@@ -113,7 +113,7 @@
 | Precision@5 | **0.60** |
 | MRR | **1.00** |
 | Cosine Sim promedio | 0.7446 |
-| Latencia | 22.0 ms |
+| Latencia | 20.0 ms |
 
 ### Fragmentos recuperados
 
@@ -121,7 +121,7 @@
 
 > Handy to have and easy to set up and use
 
-**[2]** Similitud: `0.7552` (Alta) | Rating: 4.0 ★ | Sentiment: `positive` | Categoría: `Amazon Devices` | ASIN: `B075X8471B`
+**[2]** Similitud: `0.7551` (Alta) | Rating: 4.0 ★ | Sentiment: `positive` | Categoría: `Amazon Devices` | ASIN: `B075X8471B`
 
 > Is very easy to use once it is set up
 
@@ -146,7 +146,7 @@
 | Precision@5 | **1.00** |
 | MRR | **1.00** |
 | Cosine Sim promedio | 0.6295 |
-| Latencia | 16.1 ms |
+| Latencia | 19.4 ms |
 
 ### Fragmentos recuperados
 
@@ -179,7 +179,7 @@
 | Precision@5 | **0.80** |
 | MRR | **1.00** |
 | Cosine Sim promedio | 0.7740 |
-| Latencia | 16.2 ms |
+| Latencia | 19.6 ms |
 
 ### Fragmentos recuperados
 
@@ -212,7 +212,7 @@
 | Precision@5 | **1.00** |
 | MRR | **1.00** |
 | Cosine Sim promedio | 0.7253 |
-| Latencia | 16.7 ms |
+| Latencia | 19.4 ms |
 
 ### Fragmentos recuperados
 
