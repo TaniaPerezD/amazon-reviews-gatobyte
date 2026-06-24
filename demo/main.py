@@ -15,26 +15,9 @@ import re, unicodedata
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
 
-class CpuFullPreprocessor(BaseEstimator, TransformerMixin):
-    def __init__(self, *args, **kwargs): pass
-    def fit(self, X, y=None): return self
-    def transform(self, X): return X
-
-class CpuPreprocessor(BaseEstimator, TransformerMixin):
-    def __init__(self, *args, **kwargs): pass
-    def fit(self, X, y=None): return self
-    def transform(self, X): return X
-    
-class CpuTextCleaner(BaseEstimator, TransformerMixin):
-    def __init__(self, *args, **kwargs): pass
-    def fit(self, X, y=None): return self
-    def transform(self, X): return X
-
 # Registrar en __main__ (que es este mismo archivo cuando uvicorn lo carga)
 import __main__
-__main__.CpuFullPreprocessor = CpuFullPreprocessor
-__main__.CpuPreprocessor     = CpuPreprocessor
-__main__.CpuTextCleaner      = CpuTextCleaner
+
 # ────────────────────────────────────────────────────
 import sys
 import os
