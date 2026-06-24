@@ -2188,9 +2188,11 @@ details[open] .rag-toggle::after { content: '▴'; }
   font-size: 9px;
   background: var(--amber-lt);
   color: var(--amber-xdk);
-  padding: 1px 5px;
+  padding: 2px 7px;
   border-radius: 10px;
-  font-weight: 600;
+  font-weight: 700;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .prob-track {
