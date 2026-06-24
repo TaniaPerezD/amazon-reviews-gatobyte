@@ -1,0 +1,47 @@
+{
+  "tipo": "DistilBERT-base-uncased + LoRA",
+  "base_model": "distilbert-base-uncased",
+  "peft_type": "LoRA",
+  "lora_r": 8,
+  "lora_alpha": 16,
+  "lora_dropout": 0.1,
+  "target_modules": [
+    "q_lin",
+    "v_lin"
+  ],
+  "trainable_params": "~295,680 (0.44%)",
+  "total_params": "~66,660,738",
+  "politica": "Ajuste muy liviano §4.1 ✓",
+  "n_subsample_train": 50000,
+  "n_epochs": 3,
+  "mejor_epoch": 3,
+  "batch_size_train": 64,
+  "learning_rate": 0.0002,
+  "max_seq_length": 128,
+  "device": "cuda",
+  "class_weights": "balanced",
+  "historial_entrenamiento": [
+    {
+      "epoch": 1,
+      "loss_train": 0.6524,
+      "f1_macro_val": 0.7056,
+      "bal_acc_val": 0.7654,
+      "tiempo_s": 868.3
+    },
+    {
+      "epoch": 2,
+      "loss_train": 0.5292,
+      "f1_macro_val": 0.7234,
+      "bal_acc_val": 0.7816,
+      "tiempo_s": 879.5
+    },
+    {
+      "epoch": 3,
+      "loss_train": 0.4893,
+      "f1_macro_val": 0.7269,
+      "bal_acc_val": 0.7835,
+      "tiempo_s": 877.0
+    }
+  ],
+  "ruta_pesos_lora": "/content/drive/MyDrive/ML/models/distilbert_lora"
+}

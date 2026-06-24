@@ -31,7 +31,7 @@ const MOCK_RESPONSES = {
 };
 
 // Cambia esto a false cuando el endpoint /api/predict esté listo
-const USE_MOCK = true;
+const USE_MOCK = false;
 
 // ── INIT ────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
@@ -92,6 +92,8 @@ async function runClassifier() {
     let data;
 
     if (USE_MOCK) {
+      
+      console.log("NOU ESTAMOS USNADO EL MODELO");
       // Simular latencia de red
       await new Promise((r) => setTimeout(r, 420));
       data = structuredClone(MOCK_RESPONSES[sentState.activeModel]);
@@ -106,9 +108,11 @@ async function runClassifier() {
         data.probabilities = { Positive: 0.28, Neutral: 0.55, Negative: 0.17 };
       }
     } else {
+      console.log("ESTAMOS USNADO EL MODELO");
       // ── ENDPOINT REAL ──
       // Asegúrate de que el body coincida con lo que espera tu FastAPI
       const res = await fetch("/api/predict", {
+        
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -118,6 +122,8 @@ async function runClassifier() {
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       data = await res.json();
+      console.log("Respuesta del backend:", JSON.stringify(data));
+      if (data.error) throw new Error(data.error);
     }
 
     sentState.lastResult = data;
@@ -139,7 +145,14 @@ function renderClassifyResult(data, inputText) {
   const area = $("classifyResult");
   if (!area) return;
 
-  const { label, probabilities, model_display, latency_ms } = data;
+  const label        = (data.label || "neutral").toLowerCase();
+  const probabilities = Object.fromEntries(
+    Object.entries(data.probabilities || {}).map(([k, v]) => [k.toLowerCase(), v])
+  );
+  const model_display = data.model_display;
+  const latency_ms    = data.latency_ms;
+
+
   const { cls } = sentimentInfo(label);
 
   // Colores por sentimiento
@@ -166,11 +179,12 @@ function renderClassifyResult(data, inputText) {
   };
 
   // Barras de probabilidad
-  const probOrder = ["Positive", "Neutral", "Negative"];
+  // Barras de probabilidad (Corregido)
+  const probOrder = ["positive", "neutral", "negative"];
   const probBars = probOrder.map((key) => {
     const val  = probabilities[key] ?? 0;
     const pct  = Math.round(val * 100);
-    const { cls: barCls } = sentimentInfo(key);
+    const { cls: barCls } = sentimentInfo(key); // <--- Mapea a barCls
     const barColorMap = {
       positive: "var(--green)",
       negative: "var(--red)",
@@ -183,7 +197,7 @@ function renderClassifyResult(data, inputText) {
     return `
     <div class="prob-row ${isWinner ? "prob-winner" : ""}">
       <div class="prob-label">
-        ${isWinner ? `<i data-lucide="${emojiMap[barCls]}" style="width:13px;height:13px;flex-shrink:0;"></i>` : ""}
+        ${isWinner ? `<i data-lucide="${emojiMap[barCls]}" style="width:13px;height:13px;flex-shrink:0;"></i>` : ""} 
         <span>${labelMap[barCls] || key}</span>
         ${isWinner ? `<span class="prob-winner-tag">Predicción</span>` : ""}
       </div>

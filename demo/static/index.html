@@ -20,14 +20,13 @@
         <span class="logo-sub">Review Search</span>
       </div>
       <nav class="tab-nav" role="tablist">
-        <button class="tab-btn active" data-tab="search" role="tab"><i data-lucide="search"></i> Buscar</button>
-        <button class="tab-btn" data-tab="performance" role="tab"><i data-lucide="bar-chart-2"></i> Rendimiento</button>
-        <button class="tab-btn" data-tab="explorer" role="tab"><i data-lucide="database"></i> Explorar índice</button>
-        <button class="tab-btn" data-tab="status" role="tab"><i data-lucide="settings"></i> Sistema</button>
-        
-        <button class="tab-btn" data-tab="sentiment" role="tab"><i data-lucide="smile"></i> Sentimiento</button>
-        <button class="tab-btn" data-tab="dashboard" role="tab"><i data-lucide="layout-dashboard"></i> Dashboard ML</button>
-        <button class="tab-btn" data-tab="embeddings" role="tab"><i data-lucide="scatter-chart"></i> UMAP</button>
+        <button class="tab-btn active" data-tab="search"      role="tab"><i data-lucide="search"></i> Buscar</button>
+        <button class="tab-btn"        data-tab="classifier"  role="tab"><i data-lucide="zap"></i> Clasificador</button>
+        <button class="tab-btn"        data-tab="umap"        role="tab"><i data-lucide="scatter-chart"></i> Embeddings</button>
+        <button class="tab-btn"        data-tab="dashboard"   role="tab"><i data-lucide="bar-chart-2"></i> Métricas</button>
+        <button class="tab-btn"        data-tab="performance" role="tab"><i data-lucide="activity"></i> Rendimiento</button>
+        <button class="tab-btn"        data-tab="explorer"    role="tab"><i data-lucide="database"></i> Explorar</button>
+        <button class="tab-btn"        data-tab="status"      role="tab"><i data-lucide="settings"></i> Sistema</button>
       </nav>
     </div>
   </header>
@@ -73,7 +72,6 @@
     <!-- ══ TAB: BUSCAR ══════════════════════════════════ -->
     <section class="tab-panel active" id="tab-search">
 
-      <!-- Search box -->
       <div class="search-panel">
         <div class="search-label">¿Qué quieres saber sobre los productos?</div>
         <div class="search-row">
@@ -89,7 +87,6 @@
           </button>
         </div>
 
-        <!-- Sugerencias -->
         <div class="suggestions">
           <div class="sug-group">
             <div class="sug-label"><i data-lucide="battery"></i> Batería y energía</div>
@@ -138,7 +135,6 @@
           </div>
         </div>
 
-        <!-- Opciones avanzadas -->
         <details class="advanced">
           <summary><i data-lucide="sliders-horizontal"></i> Opciones avanzadas</summary>
           <div class="advanced-body">
@@ -162,7 +158,6 @@
         </details>
       </div>
 
-      <!-- Resultados -->
       <div id="resultsArea">
         <div class="empty-state">
           <div class="empty-icon"><i data-lucide="shopping-cart"></i></div>
@@ -171,6 +166,92 @@
         </div>
       </div>
 
+    </section>
+
+    <!-- ══ TAB: CLASIFICADOR ══════════════════════════════ -->
+    <section class="tab-panel" id="tab-classifier">
+      <div class="panel-header">
+        <h2>Clasificador de sentimiento</h2>
+        <p>Ingresa una reseña y compara cómo la clasifica cada modelo.</p>
+      </div>
+
+      <div class="classifier-layout">
+
+        <!-- Panel de entrada -->
+        <div class="classifier-input-panel">
+
+          <!-- Selector de modelo -->
+          <div>
+            <div style="font-size:12px;font-weight:600;color:var(--text-2);margin-bottom:8px;">Modelo</div>
+            <div class="model-toggle">
+              <button class="model-toggle-btn active" data-model="baseline">
+                <strong>Baseline</strong>
+                LightGBM + TF-IDF
+              </button>
+              <button class="model-toggle-btn" data-model="transformer">
+                <strong>Transformer</strong>
+                DistilBERT
+              </button>
+            </div>
+          </div>
+
+          <!-- Textarea -->
+          <div>
+            <div style="font-size:12px;font-weight:600;color:var(--text-2);margin-bottom:8px;">
+              Reseña a clasificar
+              <span style="font-size:11px;font-weight:400;color:var(--text-3);">(Ctrl+Enter para clasificar)</span>
+            </div>
+            <textarea
+              id="sentimentInput"
+              class="sentiment-textarea"
+              placeholder="Pega aquí una reseña en inglés o español…&#10;Ej: Amazing product! Works exactly as described. Battery lasts all day."
+            ></textarea>
+          </div>
+
+          <!-- Ejemplos -->
+          <div class="example-chips-row">
+            <span class="example-label">Probar con:</span>
+            <div id="exampleChips" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+          </div>
+
+          <!-- Botón -->
+          <button class="btn-search" id="classifyBtn" style="width:100%;justify-content:center;">
+            <i data-lucide="zap"></i> Clasificar
+          </button>
+
+        </div>
+
+        <!-- Panel de resultado -->
+        <div class="classifier-result-panel" id="classifyResult">
+          <div class="classify-empty">
+            <i data-lucide="message-square" style="width:36px;height:36px;opacity:.3;"></i>
+            <p>El resultado aparecerá aquí después de clasificar una reseña.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ══ TAB: UMAP / EMBEDDINGS ════════════════════════ -->
+    <section class="tab-panel" id="tab-umap">
+      <div class="panel-header">
+        <h2>Espacio semántico de embeddings</h2>
+        <p>Proyección UMAP de 5,002 embeddings generados con all-MiniLM-L6-v2 (384d → 2d).</p>
+      </div>
+      <div id="umapContent">
+        <div class="loading-state"><span class="spinner"></span> Cargando embeddings…</div>
+      </div>
+    </section>
+
+    <!-- ══ TAB: DASHBOARD DE MÉTRICAS ═══════════════════ -->
+    <section class="tab-panel" id="tab-dashboard">
+      <div class="panel-header">
+        <h2>Dashboard de métricas</h2>
+        <p>Comparativa de modelos de clasificación de sentimiento.</p>
+      </div>
+      <div id="dashboardContent">
+        <div class="loading-state"><span class="spinner"></span> Cargando métricas…</div>
+      </div>
     </section>
 
     <!-- ══ TAB: RENDIMIENTO ══════════════════════════════ -->
@@ -267,64 +348,7 @@
         <div class="loading-state"><span class="spinner"></span> Cargando estado…</div>
       </div>
     </section>
-    
-    <section class="tab-panel" id="tab-sentiment">
-      <div class="panel-header">
-        <h2>Clasificador de Sentimiento</h2>
-        <p>Prueba los modelos de clasificación de texto en tiempo real.</p>
-      </div>
 
-      <div class="sentiment-layout" style="max-width: 800px; margin: 0 auto; padding: 20px 0;">
-        
-        <div class="scard sentiment-controls">
-          <div class="model-toggle" style="display: flex; gap: 10px; margin-bottom: 20px;">
-            <button class="model-toggle-btn active btn-secondary" data-model="baseline">Baseline (LightGBM)</button>
-            <button class="model-toggle-btn btn-secondary" data-model="transformer">Transformer (DistilBERT)</button>
-          </div>
-
-          <label for="sentimentInput" style="display:block; margin-bottom:8px; font-weight:600; color:#1E293B;">Escribe una reseña:</label>
-          <textarea 
-            id="sentimentInput" 
-            class="search-input" 
-            rows="4" 
-            style="width: 100%; resize: vertical; padding: 12px; border: 1px solid #CBD5E1; border-radius: 8px;"
-            placeholder="Ej: Me encantó este producto, la batería dura muchísimo..."></textarea>
-
-          <div style="margin-top: 12px;">
-            <span style="font-size: 13px; color: #64748b; font-weight: 500;">Ejemplos rápidos:</span>
-            <div id="exampleChips" style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
-              </div>
-          </div>
-
-          <button id="classifyBtn" class="btn-classify" style="margin-top: 24px; width: 100%; justify-content: center; height: 50px;">
-            <i data-lucide="zap"></i> Clasificar texto
-          </button>
-        </div>
-
-        <div id="classifyResult" style="margin-top: 24px;">
-          <div class="empty-state">
-            <div class="empty-icon"><i data-lucide="smile"></i></div>
-            <h3>Esperando texto</h3>
-            <p>Escribe una reseña arriba y haz clic en Clasificar para ver el análisis.</p>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <section class="tab-panel" id="tab-dashboard">
-      <div class="panel-header">
-        <h2>Dashboard de Métricas ML</h2>
-        <p>Comparativa de rendimiento entre el modelo Baseline y el Transformer.</p>
-      </div>
-      
-      <div id="dashboardContent">
-        <div class="empty-state">
-          <div class="spinner"></div>
-          <p>Cargando dashboard...</p>
-        </div>
-      </div>
-    </section>
   </main>
 
   <footer class="site-footer">
@@ -339,5 +363,6 @@
   <script src="/static/app.js"></script>
   <script src="/static/sentiment.js"></script>
   <script src="/static/dashboard.js"></script>
+  <script src="/static/umap.js"></script>
 </body>
 </html>
