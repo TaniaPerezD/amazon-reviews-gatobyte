@@ -2,12 +2,12 @@ GATOBYTE — Evaluación de Recuperación Semántica (RAG)
 ========================================================================
 Query                                          P@K    MRR   CosSim   Lat(ms)
 ------------------------------------------------------------------------
-problemas frecuentes con el producto          0.40   0.50   0.6632      19.3
-opiniones sobre duración de batería           1.00   1.00   0.7943      44.0
-defectos de fabricación y materiales          0.80   1.00   0.6534      17.9
-facilidad de configuración y uso              0.60   1.00   0.7446      22.0
-ruido y temperatura del dispositivo           1.00   1.00   0.6295      16.1
-relación calidad precio                       0.80   1.00   0.7740      16.2
-pantalla y calidad de imagen                  1.00   1.00   0.7253      16.7
+problemas frecuentes con el producto          0.40   0.50   0.6632      24.5
+opiniones sobre duración de batería           1.00   1.00   0.7943      73.0
+defectos de fabricación y materiales          0.80   1.00   0.6534      20.0
+facilidad de configuración y uso              0.60   1.00   0.7446      20.0
+ruido y temperatura del dispositivo           1.00   1.00   0.6295      19.4
+relación calidad precio                       0.80   1.00   0.7740      19.6
+pantalla y calidad de imagen                  1.00   1.00   0.7253      19.4
 ------------------------------------------------------------------------
-MEAN                                          0.80   0.93        —      21.7
+MEAN                                          0.80   0.93        —      28.0
