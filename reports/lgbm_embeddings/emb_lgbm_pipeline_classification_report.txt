@@ -1,0 +1,12 @@
+Modelo: emb_lgbm_pipeline
+2026-06-24T06:31:59.507210
+
+              precision    recall  f1-score   support
+
+    negative       0.78      0.68      0.73     31803
+     neutral       0.16      0.75      0.27     11040
+    positive       0.99      0.66      0.79    107157
+
+    accuracy                           0.67    150000
+   macro avg       0.64      0.70      0.59    150000
+weighted avg       0.88      0.67      0.74    150000

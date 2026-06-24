@@ -1,0 +1,122 @@
+{
+  "validacion": {
+    "nombre": "LightGBM-Emb",
+    "timestamp": "2026-06-24T06:30:27.080983",
+    "tiempo_train_s": 2087.5,
+    "f1_macro": 0.5936,
+    "f1_weighted": 0.7367,
+    "accuracy": 0.6686,
+    "balanced_accuracy": 0.6961,
+    "roc_auc_macro": 0.9018,
+    "pr_auc_macro": 0.7041,
+    "por_clase": {
+      "negative": {
+        "f1": 0.7233,
+        "precision": 0.7736,
+        "recall": 0.6791,
+        "pr_auc": 0.832,
+        "soporte": 31802
+      },
+      "neutral": {
+        "f1": 0.2687,
+        "precision": 0.1636,
+        "recall": 0.7523,
+        "pr_auc": 0.3023,
+        "soporte": 11040
+      },
+      "positive": {
+        "f1": 0.7888,
+        "precision": 0.987,
+        "recall": 0.6569,
+        "pr_auc": 0.9779,
+        "soporte": 107158
+      }
+    },
+    "analisis_error": {
+      "error_critico_neg_a_pos": 310,
+      "error_critico_pct": 0.97,
+      "total_errores": 49704,
+      "tasa_error_pct": 33.14,
+      "confusion_matrix": [
+        [
+          21596,
+          9896,
+          310
+        ],
+        [
+          2121,
+          8305,
+          614
+        ],
+        [
+          4198,
+          32565,
+          70395
+        ]
+      ]
+    },
+    "score_compuesto": 0.7168
+  },
+  "test": {
+    "nombre": "LightGBM-Emb",
+    "timestamp": "2026-06-24T06:30:27.349269",
+    "tiempo_train_s": null,
+    "f1_macro": 0.5941,
+    "f1_weighted": 0.7367,
+    "accuracy": 0.6687,
+    "balanced_accuracy": 0.6964,
+    "roc_auc_macro": 0.9009,
+    "pr_auc_macro": 0.7021,
+    "por_clase": {
+      "negative": {
+        "f1": 0.7253,
+        "precision": 0.7754,
+        "recall": 0.6812,
+        "pr_auc": 0.8325,
+        "soporte": 31803
+      },
+      "neutral": {
+        "f1": 0.2686,
+        "precision": 0.1635,
+        "recall": 0.7516,
+        "pr_auc": 0.2961,
+        "soporte": 11040
+      },
+      "positive": {
+        "f1": 0.7884,
+        "precision": 0.9865,
+        "recall": 0.6565,
+        "pr_auc": 0.9777,
+        "soporte": 107157
+      }
+    },
+    "analisis_error": {
+      "error_critico_neg_a_pos": 310,
+      "error_critico_pct": 0.97,
+      "total_errores": 49689,
+      "tasa_error_pct": 33.13,
+      "confusion_matrix": [
+        [
+          21664,
+          9829,
+          310
+        ],
+        [
+          2090,
+          8298,
+          652
+        ],
+        [
+          4184,
+          32624,
+          70349
+        ]
+      ]
+    },
+    "score_compuesto": 0.7168
+  },
+  "diferencia_val_test": {
+    "f1_macro": 0.0005,
+    "roc_auc": -0.0009
+  }
+}
