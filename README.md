@@ -1,14 +1,17 @@
-# GATOBYTE — Mini Proyecto MLOps + RAG
-## Recuperación Semántica en Reseñas de Electrónica
+# GATOBYTE — Análisis de Reseñas de Amazon
+## Clasificación de Sentimiento + Búsqueda Semántica (RAG)
 **UCB San Pablo · Machine Learning · Equipo: GATOBYTE**
 
 ---
 
 ## Descripción
 
-Sistema de recuperación semántica (RAG) sobre reseñas de productos electrónicos de Amazon. Dada una consulta en lenguaje natural —en español o inglés— el sistema devuelve los fragmentos de reseña más relevantes usando embeddings multilingües y búsqueda vectorial con FAISS.
+Sistema de análisis de reseñas de productos electrónicos de Amazon con dos componentes principales:
 
-El pipeline sigue la metodología CRISP-DM e incluye tracking con MLflow, versionado del índice, política de actualización automática y una demo web interactiva.
+- **Clasificador de sentimiento**: predice si una reseña es positiva, neutral o negativa. Incluye un modelo baseline (LightGBM + TF-IDF) y un modelo transformer (DistilBERT + LoRA).
+- **Búsqueda semántica (RAG)**: dado un texto en español o inglés, recupera los fragmentos de reseñas más relevantes usando embeddings multilingües y un índice FAISS.
+
+El proyecto sigue la metodología CRISP-DM e incluye tracking de experimentos con MLflow, versionado del índice RAG, política de actualización automática y una demo web interactiva con múltiples vistas.
 
 ---
 
@@ -16,33 +19,58 @@ El pipeline sigue la metodología CRISP-DM e incluye tracking con MLflow, versio
 
 ```
 ├── data/
-│   ├── sample_ml.parquet          ← dataset
-│   └── FUENTE.md                  ← procedencia y descripción del dataset
-├── src/
-│   ├── 01_build_index.py          ← Data Prep + Embeddings + FAISS + MLflow
-│   ├── 02_evaluate_retrieval.py   ← Precision@K, MRR, Cosine Sim, Latencia
-│   ├── 03_update_policy.py        ← Triggers de rebuild + MLflow
-│   └── 04_baseline_comparison.py  ← Comparación TF-IDF vs MiniLM
-├── demo/
-│   ├── main.py                    ← API FastAPI (búsqueda, chunks, eval)
-│   └── static/
-│       ├── index.html
-│       ├── app.js
-│       └── style.css
+│   ├── sample_ml.parquet                  ← dataset 
+│   ├── pipeline_transformacion_cpu.joblib ← pipeline de features para baseline
+│   ├── lightgbm_tuned_final_cpu.joblib    ← modelo LightGBM entrenado
+│   ├── label_encoder.joblib               ← encoder de clases (neg/neu/pos)
+│   ├── metadata_modelo_final.json         ← métricas y config del baseline
+│   ├── metadata_transformer.json          ← métricas del transformer
+│   ├── metricas_todos_modelos.json        ← tabla comparativa de todos los modelos
+│   ├── metricas_referencia.json           ← métricas de referencia para drift
+│   ├── umap_coords.csv                    ← coordenadas 2D para visualización
+│   └── FUENTE.md                          ← procedencia y descripción del dataset
 ├── models/
+│   ├── distilbert_lora/                   ← adaptador LoRA entrenado
+│   │   ├── adapter_config.json
+│   │   ├── adapter_model.safetensors
+│   │   ├── tokenizer.json
+│   │   └── tokenizer_config.json
 │   └── faiss_index/
-│       ├── latest.json            ← puntero a la versión activa
+│       ├── latest.json                    ← puntero a la versión activa
 │       └── v_YYYYMMDD_HASH/
 │           ├── index.faiss
 │           ├── chunks_metadata.pkl
 │           └── manifest.json
+├── src/
+│   ├── 01_build_index.py          ← construye el índice FAISS + registro MLflow
+│   ├── 02_evaluate_retrieval.py   ← Precision@K, MRR, latencia del RAG
+│   ├── 03_update_policy.py        ← política de rebuild del índice
+│   └── 04_baseline_comparison.py  ← TF-IDF vs MiniLM
+├── demo/
+│   ├── main.py                    ← API FastAPI (entry point)
+│   └── routes/
+│       ├── sentiment.py           ← /api/predict (baseline + transformer)
+│       ├── embeddings.py          ← /api/embeddings/umap
+│       ├── metrics.py             ← /api/metrics
+│       ├── rag.py                 ← /api/search, /api/info
+│       ├── inferencia_cpu.py      ← lógica de inferencia del baseline
+│       └── migrar_pipeline_cpu.py ← clases del pipeline CPU (necesarias para joblib)
+│   └── static/
+│       ├── index.html
+│       ├── app.js        ← tab Buscar (RAG)
+│       ├── sentiment.js  ← tab Clasificador
+│       ├── umap.js       ← tab Embeddings
+│       ├── dashboard.js  ← tab Métricas
+│       └── style.css
+├── notebooks/
+│   └── rag_crisp_dm_exploratorio.ipynb
 ├── reports/
 │   ├── retrieval_eval_report.json
 │   ├── retrieval_eval_summary.txt
 │   ├── baseline_comparison_report.json
-│   └── baseline_comparison_summary.txt
-├── notebooks/
-│   └── rag_crisp_dm_exploratorio.ipynb
+│   ├── baseline_comparison_summary.txt
+│   ├── monitoring_history.json
+│   └── drift_trend.png
 ├── config/
 │   └── rag_config.yaml            ← configuración central del pipeline
 ├── mlruns/                        ← artefactos MLflow (generado automáticamente)
@@ -55,7 +83,7 @@ El pipeline sigue la metodología CRISP-DM e incluye tracking con MLflow, versio
 ## Instalación
 
 ```bash
-# 1. Crear entorno virtual
+# 1. Crear entorno virtual (Python 3.10)
 python -m venv venv
 source venv/bin/activate        # Windows: venv\Scripts\activate
 
@@ -65,63 +93,117 @@ pip install -r requirements.txt
 
 ---
 
-## Ejecución del pipeline
+## Ejecutar la demo
 
-### Paso 1 — Construir el índice vectorial
+```bash
+export TRANSFORMERS_OFFLINE=1
+export HF_HUB_OFFLINE=1
+export KMP_DUPLICATE_LIB_OK=TRUE
+export OMP_NUM_THREADS=1
+uvicorn demo.main:app --port 7860
+```
+
+Luego abrir [http://localhost:7860](http://localhost:7860).
+
+> **Nota macOS ARM (Apple Silicon):** los cuatro `export` son necesarios para evitar un conflicto de OpenMP entre LightGBM y PyTorch, y para que los modelos HuggingFace carguen desde caché local sin intentar conectarse a internet.
+
+### Tabs de la demo
+
+| Tab | Descripción |
+|-----|-------------|
+| **Buscar** | Búsqueda semántica sobre reseñas (RAG). Requiere índice FAISS generado. |
+| **Clasificador** | Clasifica un texto como positivo / neutral / negativo. Soporta modelo baseline y transformer. |
+| **Embeddings** | Visualización UMAP del espacio semántico de los embeddings. |
+| **Métricas** | Dashboard con métricas de entrenamiento de ambos modelos. |
+| **Rendimiento** | Tabla de evaluación de recuperación del RAG (Precision@K, MRR, latencia). |
+| **Explorar** | Explorador del dataset de reseñas. |
+| **Sistema** | Estado del índice RAG y configuración activa. |
+
+---
+
+## Endpoints de la API
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| `POST` | `/api/predict` | Clasifica sentimiento. Body: `{"text": "...", "model": "baseline" \| "transformer", "price": 0.0}` |
+| `GET` | `/api/metrics` | Métricas de entrenamiento de ambos modelos |
+| `GET` | `/api/embeddings/umap` | Coordenadas UMAP de los embeddings |
+| `GET` | `/api/search?q=...&top_k=5` | Búsqueda semántica RAG |
+| `GET` | `/api/info` | Información del índice FAISS activo |
+
+---
+
+## Modelos de clasificación de sentimiento
+
+### Baseline — LightGBM + TF-IDF (CPU)
+
+Pipeline clásico con features de texto (TF-IDF 10 000 features) y features tabulares (longitud, precio, categoría). Optimizado con Optuna.
+
+| Métrica | Validación | Test |
+|---------|-----------|------|
+| F1 Macro | 0.6953 | 0.6945 |
+| F1 Weighted | 0.8430 | 0.8422 |
+| Balanced Accuracy | 0.7578 | 0.7575 |
+| ROC-AUC | 0.9327 | 0.9320 |
+
+### Transformer — DistilBERT + LoRA (PEFT)
+
+Fine-tuning eficiente de DistilBERT-base-uncased con adaptadores LoRA (r=8, α=16) sobre las capas de atención. Modelo ganador del proyecto.
+
+| Métrica | Test |
+|---------|------|
+| F1 Macro | 0.7272 |
+| Balanced Accuracy | 0.7833 |
+| ROC-AUC | 0.9483 |
+| PR-AUC | 0.7762 |
+| Score Compuesto | 0.8104 |
+
+### Comparativa de todos los modelos evaluados
+
+| Modelo | Representación | F1 Macro | Bal. Acc | ROC-AUC | Score |
+|--------|---------------|---------|---------|---------|-------|
+| **DistilBERT+LoRA** | Contextual | **0.727** | **0.783** | **0.948** | **0.810** |
+| Stacking Ensemble | TF-IDF+Emb+BERT | 0.725 | 0.781 | 0.947 | 0.808 |
+| LightGBM TF-IDF | TF-IDF + Tabular | 0.695 | 0.758 | 0.932 | 0.785 |
+| XGBoost TF-IDF | TF-IDF + Tabular | 0.679 | 0.749 | 0.931 | 0.776 |
+| LogReg TF-IDF | TF-IDF + Tabular | 0.691 | 0.720 | 0.943 | 0.775 |
+| LogReg Emb | MiniLM-384 | 0.648 | 0.710 | 0.905 | 0.744 |
+| LightGBM Emb | MiniLM-384 | 0.594 | 0.696 | 0.901 | 0.717 |
+| Naive Bayes | TF-IDF | 0.557 | 0.557 | 0.900 | 0.660 |
+
+---
+
+## Pipeline RAG
+
+### Construir el índice vectorial
 ```bash
 python src/01_build_index.py
 ```
-Carga el parquet, aplica chunking (500 chars, overlap 100), genera embeddings con `paraphrase-multilingual-MiniLM-L12-v2`, construye el índice FAISS y registra el run en MLflow.
+Carga el parquet, aplica chunking (500 chars, overlap 100), genera embeddings con `paraphrase-multilingual-MiniLM-L12-v2` (dim 384), construye el índice FAISS y registra el run en MLflow.
 
-### Paso 2 — Evaluar calidad de recuperación
+### Evaluar calidad de recuperación
 ```bash
 python src/02_evaluate_retrieval.py
 ```
-Ejecuta las queries de evaluación definidas en `config/rag_config.yaml` y guarda Precision@K, MRR, similitud coseno y latencia en `reports/`.
+Ejecuta las queries de evaluación de `config/rag_config.yaml` y guarda Precision@K, MRR, similitud coseno y latencia en `reports/`.
 
-### Paso 3 — Verificar política de actualización
+### Verificar política de actualización
 ```bash
 python src/03_update_policy.py
 ```
-Evalúa los tres triggers (antigüedad, drift, volumen) y registra la decisión KEEP / REBUILD en MLflow.
+Evalúa tres triggers (antigüedad, drift de calidad, volumen de datos nuevos) y registra la decisión KEEP / REBUILD en MLflow.
 
-### Paso 4 — Comparación con baseline TF-IDF
+### Comparación con baseline TF-IDF
 ```bash
 python src/04_baseline_comparison.py
 ```
 Compara TF-IDF clásico vs embeddings MiniLM sobre las mismas queries. Resultados en `reports/baseline_comparison_summary.txt`.
 
-### Paso 5 — Demo interactiva
-```bash
-uvicorn demo.main:app --reload --port 7860
-# Abrir http://localhost:7860
-```
-
-### Ver runs en MLflow
-```bash
-mlflow ui
-# Abrir http://localhost:5000
-# Experimento: "RAG_Electronics_Reviews"
-```
-
 ---
 
-## Metodología CRISP-DM
+## Métricas de recuperación RAG
 
-| Fase | Script / Artefacto | Descripción |
-|------|--------------------|-------------|
-| 1. Business Understanding | `notebooks/rag_crisp_dm_exploratorio.ipynb` | Definición del problema RAG |
-| 2. Data Understanding | `notebooks/` → sección EDA | Distribución de texto, sentiment, categorías |
-| 3. Data Preparation | `src/01_build_index.py` → `load_and_prepare`, `chunk_reviews` | Carga parquet, filtrado, chunking con overlap |
-| 4. Modeling | `src/01_build_index.py` → `generate_embeddings`, `build_faiss_index` | Embeddings MiniLM + índice FAISS IndexFlatIP |
-| 5. Evaluation | `src/02_evaluate_retrieval.py` + `src/04_baseline_comparison.py` | Métricas de recuperación + comparación baseline |
-| 6. Deployment | `demo/main.py` + `src/03_update_policy.py` | Demo FastAPI + política de actualización |
-
----
-
-## Métricas de evaluación
-
-Resultados sobre 7 queries de prueba en español (reseñas en inglés — cross-language):
+Evaluación sobre 7 queries en español (corpus en inglés — búsqueda cross-language):
 
 | Query | Precision@5 | MRR | Cosine Sim | Latencia |
 |-------|-------------|-----|------------|----------|
@@ -134,22 +216,7 @@ Resultados sobre 7 queries de prueba en español (reseñas en inglés — cross-
 | pantalla y calidad de imagen | 1.00 | 1.00 | 0.725 | 17 ms |
 | **MEDIA** | **0.80** | **0.93** | — | **22 ms** |
 
-Todos los objetivos superados: Precision@K ≥ 0.60  · MRR ≥ 0.60  · Latencia < 200 ms 
-
----
-
-## Comparación con baseline TF-IDF
-
-| Query (ES) | TF-IDF P@K | MiniLM P@K | Ganador |
-|------------|-----------|------------|---------|
-| problemas frecuentes | 0.80 | 0.40 | TF-IDF |
-| opiniones sobre batería | 1.00 | 1.00 | MiniLM |
-| defectos de fabricación | 1.00 | 0.20 | TF-IDF |
-| facilidad de uso | 0.20 | 0.20 | MiniLM |
-| ruido excesivo | 0.80 | 0.80 | MiniLM |
-| **MEDIA** | **0.76** | **0.52** | — |
-
-**Conclusión:** TF-IDF supera a MiniLM en precisión bruta cuando las keywords de la query coinciden léxicamente con el corpus en inglés. MiniLM supera a TF-IDF en queries donde la semántica importa más que las palabras exactas, y es el único enfoque viable para búsqueda cross-language (query en español, corpus en inglés) sin traducción previa. La comparación justifica el uso del modelo multilingüe para el caso de uso real del sistema.
+Objetivos cumplidos: Precision@K ≥ 0.60 · MRR ≥ 0.60 · Latencia < 200 ms
 
 ---
 
@@ -167,14 +234,38 @@ Todos los objetivos superados: Precision@K ≥ 0.60  · MRR ≥ 0.60  · Latenci
 
 ---
 
+## Metodología CRISP-DM
+
+| Fase | Artefacto | Descripción |
+|------|-----------|-------------|
+| 1. Business Understanding | `notebooks/rag_crisp_dm_exploratorio.ipynb` | Definición del problema |
+| 2. Data Understanding | `notebooks/` → sección EDA | Distribución de texto, sentimiento, categorías |
+| 3. Data Preparation | `src/01_build_index.py` | Carga parquet, filtrado, chunking con overlap |
+| 4. Modeling | `src/01_build_index.py` + `models/distilbert_lora/` | Embeddings MiniLM + FAISS + LoRA fine-tuning |
+| 5. Evaluation | `src/02_evaluate_retrieval.py` + `src/04_baseline_comparison.py` | Métricas de recuperación y clasificación |
+| 6. Deployment | `demo/` + `src/03_update_policy.py` | Demo FastAPI + política de actualización |
+
+---
+
+## Tracking con MLflow
+
+```bash
+mlflow ui
+# Abrir http://localhost:5000
+# Experimento: "RAG_Electronics_Reviews"
+```
+
+Registra: embeddings generados, parámetros del índice, métricas de evaluación y decisiones de la política de actualización.
+
+---
+
 ## Dataset
 
 **Amazon Reviews 2023** — subconjunto de Electronics  
 McAuley Lab, UC San Diego · Hou et al., 2024 (arXiv:2403.03952)
 
-- 50 000 (para el desarollo del rag) reseñas muestreadas aleatoriamente (`random_seed=42`) 
+- 50 000 reseñas muestreadas aleatoriamente (`random_seed=42`)
 - 61 408 chunks generados (chunk_size=500, overlap=100)
 - Embeddings de dimensión 384
 
-Ver `data/FUENTE.md` para detalles completos de procedencia y columnas.
-
+Ver [data/FUENTE.md](data/FUENTE.md) para detalles completos de procedencia y columnas.

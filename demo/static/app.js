@@ -34,8 +34,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 // ── TABS ────────────────────────────────────────────
 function setupTabs() {
-  const btns  = $$(".tab-btn");
+  const btns   = $$(".tab-btn");
   const panels = $$(".tab-panel");
+  const hero   = document.getElementById("siteHero");
 
   btns.forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -46,6 +47,9 @@ function setupTabs() {
 
       btn.classList.add("active");
       $(`tab-${target}`).classList.add("active");
+
+      // Hero solo visible en el tab de búsqueda
+      if (hero) hero.classList.toggle("hero--hidden", target !== "search");
 
       // Lazy-load tab content
       if (target === "performance")  loadEval();
