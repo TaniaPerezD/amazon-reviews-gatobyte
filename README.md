@@ -1,254 +1,308 @@
-# GATOBYTE — Analisis de Resenas de Amazon Electronics
+# GATOBYTE — Análisis de Reseñas de Amazon
 
-**UCB San Pablo · Machine Learning 2026-I · Grupo 1**  
-GATOBYTE · Ivonne Colque · Dilan Mamani · Tania Pérez · Ignacio Retamozo · Adriana Rocha
+> **Grupo:** GATOBYTE · UCB San Pablo · Machine Learning · 2026
+> **Integrantes:** Ivonne Colque · Dilan Mamani · Tania Pérez · Ignacio Retamozo · Adriana Rocha
 
-Proyecto integrador de la materia de Machine Learning desarrollado en tres fases articuladas sobre el dataset Amazon Reviews 2023, categoria Electronics. La metodologia seguida es CRISP-DM y el trabajo cubre aprendizaje supervisado, no supervisado, deep learning, embeddings y un pipeline MLOps con recuperacion semantica.
+## Descripción del Proyecto
+
+Este proyecto construye un sistema de análisis de reseñas de productos electrónicos de Amazon con dos componentes principales:
+
+| Módulo | Tarea | Tecnología |
+|---|---|---|
+| Clasificación de Sentimiento | Multiclase (Positivo / Neutral / Negativo) | LightGBM + TF-IDF · DistilBERT + LoRA |
+| Búsqueda Semántica (RAG) | Recuperación por similitud semántica | FAISS · MiniLM · embeddings multilingüe |
+
+La metodología adoptada es **CRISP-DM**, con tracking de experimentos en MLflow, versionado automático del índice vectorial y una demo web interactiva con múltiples vistas.
 
 ---
 
-## Estructura del repositorio
+## Estructura del Repositorio
 
 ```
 amazon-reviews-gatobyte/
-├── config/
-│   └── rag_config.yaml                        <- configuracion central del pipeline RAG
+│
 ├── data/
-│   ├── FUENTE.md                              <- procedencia y descripcion del dataset
-│   ├── label_encoder.joblib                   <- encoder de clases del modelo baseline
-│   ├── lightgbm_tuned_final_cpu.joblib        <- modelo LightGBM entrenado (CPU)
-│   ├── metadata_modelo_final.json             <- metricas y parametros del baseline
-│   ├── metadata_transformer.json             <- metricas del DistilBERT + LoRA
-│   ├── metricas_todos_modelos.json            <- tabla comparativa completa (8 modelos)
-│   ├── pipeline_transformacion_cpu.joblib     <- pipeline de preprocesamiento (CPU)
-│   └── umap_coords.csv                        <- coordenadas UMAP de embeddings (5002 puntos)
-├── demo/
-│   ├── main.py                                <- servidor FastAPI principal
-│   ├── routes/
-│   │   ├── embeddings.py                      <- endpoint /api/embeddings/umap
-│   │   ├── inferencia_cpu.py                  <- funcion de inferencia para produccion
-│   │   ├── metrics.py                         <- endpoint /api/metrics
-│   │   ├── migrar_pipeline_cpu.py             <- clases CPU del pipeline migrado
-│   │   ├── rag.py                             <- endpoints de busqueda semantica FAISS
-│   │   └── sentiment.py                       <- endpoints /api/predict (baseline + transformer)
-│   └── static/
-│       ├── app.js                             <- logica principal del frontend
-│       ├── dashboard.js                       <- tab de metricas comparativas
-│       ├── index.html                         <- interfaz web
-│       ├── sentiment.js                       <- tab del clasificador de sentimiento
-│       ├── style.css                          <- estilos principales
-│       └── umap.js                            <- tab de visualizacion de embeddings
+│   ├── sample_ml.parquet                  # Dataset principal (50k reseñas)
+│   ├── pipeline_transformacion_cpu.joblib # Pipeline de features del baseline
+│   ├── lightgbm_tuned_final_cpu.joblib    # Modelo LightGBM entrenado
+│   ├── label_encoder.joblib               # Encoder de clases
+│   ├── metadata_modelo_final.json         # Métricas y config del baseline
+│   ├── metadata_transformer.json          # Métricas del transformer
+│   ├── metricas_todos_modelos.json        # Tabla comparativa de modelos
+│   ├── umap_coords.csv                    # Coordenadas 2D para visualización
+│   └── FUENTE.md                          # Procedencia del dataset
+│
 ├── models/
-│   ├── distilbert_lora/                       <- adaptador LoRA del transformer
+│   ├── distilbert_lora/                   # Adaptador LoRA entrenado
 │   │   ├── adapter_config.json
 │   │   ├── adapter_model.safetensors
-│   │   ├── distilbert_lora_config.json
-│   │   ├── tokenizer_config.json
-│   │   └── tokenizer.json
+│   │   └── tokenizer.json / tokenizer_config.json
 │   └── faiss_index/
-│       └── latest.json                        <- puntero a la version activa del indice
-├── notebooks/
-│   ├── amazon_full_pipeline.ipynb             <- preprocesamiento general (Fase 2)
-│   ├── Analisis_Sentimiento_Electronics_GATOBYTE.ipynb  <- modelos ML de sentimiento
-│   ├── CLUSTERING_GATOBYTE_AUTOML_.ipynb      <- clustering y AutoML
-│   ├── DEEP_LEARNING_GATOBYTE_EMBEDDING.ipynb <- DistilBERT, embeddings y UMAP
-│   ├── Gatobyte Regression.ipynb              <- regresion de rating y helpfulness
-│   ├── NB-02_Inferencia_Nuevos_Datos.ipynb    <- ejemplo de inferencia CPU
-│   ├── NB_01c_Stacking_Analisis.ipynb         <- stacking y comparativa final de modelos
-│   └── rag_crisp_dm_exploratorio.ipynb        <- exploracion del pipeline RAG
-├── reports/
-│   ├── baseline_comparison_report.json
-│   ├── baseline_comparison_summary.txt
-│   ├── retrieval_eval_report.json
-│   └── retrieval_eval_summary.txt
+│       ├── latest.json                    # Puntero a la versión activa
+│       └── v_YYYYMMDD_HASH/
+│           ├── index.faiss
+│           ├── chunks_metadata.pkl
+│           └── manifest.json
+│
 ├── src/
-│   ├── 01_build_index.py                      <- construye el indice FAISS
-│   ├── 02_evaluate_retrieval.py               <- evalua calidad de recuperacion
-│   ├── 03_update_policy.py                    <- politica de actualizacion del indice
-│   └── 04_baseline_comparison.py              <- comparacion TF-IDF vs MiniLM
-├── .gitignore
-├── README.md
-└── requirements.txt
+│   ├── 01_build_index.py          # Construye el índice FAISS + registro MLflow
+│   ├── 02_evaluate_retrieval.py   # Precision@K, MRR, latencia del RAG
+│   ├── 03_update_policy.py        # Política de rebuild del índice (3 triggers)
+│   └── 04_baseline_comparison.py  # TF-IDF vs MiniLM embeddings
+│
+├── demo/
+│   ├── main.py                    # API FastAPI (entry point)
+│   ├── routes/
+│   │   ├── sentiment.py           # POST /api/predict
+│   │   ├── embeddings.py          # GET  /api/embeddings/umap
+│   │   ├── metrics.py             # GET  /api/metrics
+│   │   └── rag.py                 # GET  /api/search · /api/info
+│   └── static/
+│       ├── index.html · style.css
+│       ├── app.js        # Tab Buscar (RAG)
+│       ├── sentiment.js  # Tab Clasificador
+│       ├── umap.js       # Tab Embeddings
+│       └── dashboard.js  # Tab Métricas
+│
+├── config/
+│   └── rag_config.yaml            # Configuración central del pipeline
+├── reports/                       # Reportes JSON/TXT de evaluación
+├── mlruns/                        # Artefactos MLflow (generado automáticamente)
+├── requirements.txt
+└── README.md
 ```
 
 ---
 
 ## Dataset
 
-**Amazon Reviews 2023** — categoria Electronics  
-McAuley Lab, UC San Diego. Hou et al., 2024.  
-Fuente: https://amazon-reviews-2023.github.io/
+**Amazon Reviews 2023** — subconjunto de Electronics
+McAuley Lab, UC San Diego · Hou et al., 2024 (arXiv:2403.03952)
 
-Se trabajo con dos subconjuntos segun la fase:
+| Atributo | Detalle |
+|---|---|
+| Registros | 50,000 reseñas (muestreo aleatorio, `random_seed=42`) |
+| Chunks generados | 61,408 fragmentos (`chunk_size=500`, `overlap=100`) |
+| Dimensión de embeddings | 384 (paraphrase-multilingual-MiniLM-L12-v2) |
+| Variable objetivo | Sentimiento derivado del rating (1–2★ Neg · 3★ Neu · 4–5★ Pos) |
 
-- Fase 2 (ML): 1,000,000 de resenas muestreadas aleatoriamente (`random_seed=42`), con 21 columnas y distribucion de sentimiento 74% positivo / 21% negativo / 7% neutro.
-- Fase 4 (RAG): 50,000 resenas para construccion del indice vectorial. 61,408 chunks generados (chunk_size=500, overlap=100). Embeddings de dimension 384.
+Ver [data/FUENTE.md](data/FUENTE.md) para detalles de procedencia y columnas.
 
-Ver `data/FUENTE.md` para detalles de columnas, criterio de muestreo y particion.
+> **Data Leakage Prevention:** La variable `rating` fue excluida del entrenamiento de sentimiento al ser la base lógica del target.
 
 ---
 
-## Instalacion
+## Instalación y Reproducción
 
-Se requiere Python 3.12. Se recomienda crear un entorno virtual antes de instalar dependencias.
+### 1. Clonar el repositorio
+
+```bash
+git clone <url-del-repo>
+cd amazon-reviews-gatobyte
+```
+
+### 2. Crear entorno virtual e instalar dependencias
 
 ```bash
 python -m venv venv
-# Windows:
-venv\Scripts\activate
-# macOS / Linux:
-source venv/bin/activate
+source venv/bin/activate        # Windows: venv\Scripts\activate
+venv/bin/python -m pip install -r requirements.txt
 ```
 
-Torch debe instalarse por separado porque requiere una URL especifica para la version CPU:
-
-```bash
-pip install torch==2.2.2 --index-url https://download.pytorch.org/whl/cpu
-```
-
-Luego el resto de dependencias:
-
-```bash
-pip install -r requirements.txt
-```
-
-El modelo base de DistilBERT se descarga de Hugging Face la primera vez (~268 MB). Para evitar que esto ocurra al arrancar el servidor, ejecutar esto una sola vez antes:
-
-```bash
-python -c "
-from transformers import DistilBertForSequenceClassification
-DistilBertForSequenceClassification.from_pretrained(
-    'distilbert-base-uncased', num_labels=3, ignore_mismatched_sizes=True
-)
-print('Modelo base cacheado correctamente')
-"
-```
-
----
-
-## Ejecucion de la demo
-
-```bash
-python demo/main.py
-```
-
-El servidor arranca en http://localhost:7860. La primera vez que se inicia tarda unos segundos adicionales porque carga el pipeline CPU y el modelo DistilBERT en memoria.
-
-Si el indice FAISS no existe todavia, la busqueda semantica no estara disponible pero el resto de la interfaz funciona normalmente. Para construir el indice:
+### 3. Construir el índice vectorial
 
 ```bash
 python src/01_build_index.py
 ```
 
----
+Carga el parquet, aplica chunking, genera embeddings con MiniLM y construye el índice FAISS. Registra el run en MLflow.
 
-## Resumen de la demo interactiva
+### 4. Ejecutar la demo
 
-La interfaz tiene seis secciones accesibles desde el menu superior:
+```bash
+export TRANSFORMERS_OFFLINE=1
+export HF_HUB_OFFLINE=1
+export KMP_DUPLICATE_LIB_OK=TRUE
+export OMP_NUM_THREADS=1
+uvicorn demo.main:app --port 7860
+```
 
-**Buscar** — recuperacion semantica sobre el indice FAISS. Se escribe una consulta en lenguaje natural (espanol o ingles) y el sistema devuelve los fragmentos de resena mas relevantes usando embeddings multilingues.
+Abrir [http://localhost:7860](http://localhost:7860).
 
-**Clasificador** — dado un texto de resena, predice si el sentimiento es positivo, negativo o neutral. Permite elegir entre el modelo baseline (LightGBM + TF-IDF) y el transformer (DistilBERT + LoRA). Muestra la etiqueta, el porcentaje de confianza y la distribucion de probabilidades para las tres clases.
-
-**Embeddings** — visualizacion UMAP de 5,002 embeddings generados con all-MiniLM-L6-v2. Los puntos se pueden colorear por sentimiento, rating o categoria. Hacer clic en un punto muestra sus coordenadas y metadatos.
-
-**Metricas** — dashboard comparativo con F1-Macro, F1-Weighted, Balanced Accuracy y ROC-AUC del baseline y el transformer. Incluye el anillo de F1-Macro y la tabla detallada con destacado del modelo ganador por metrica.
-
-**Rendimiento** — resultados del pipeline de evaluacion de recuperacion semantica sobre 7 queries de prueba en espanol.
-
-**Sistema** — estado del indice FAISS activo: version, numero de chunks, dimension de embeddings y politica de actualizacion.
+> **Nota macOS ARM (Apple Silicon):** los cuatro `export` son necesarios para evitar un conflicto de OpenMP entre LightGBM y PyTorch, y para que los modelos HuggingFace carguen desde caché local.
 
 ---
 
-## Resultados por fase
+## Demo Web
 
-### Fase 2 — Machine Learning
+| Tab | Descripción |
+|---|---|
+| **Buscar** | Búsqueda semántica sobre reseñas en español o inglés (RAG + FAISS) |
+| **Clasificador** | Clasifica texto como Positivo / Neutral / Negativo (baseline y transformer) |
+| **Embeddings** | Visualización UMAP del espacio semántico (384d → 2d) |
+| **Métricas** | Dashboard de métricas de entrenamiento de ambos modelos |
+| **Rendimiento** | Evaluación de recuperación del RAG (Precision@K, MRR, latencia) |
+| **Explorar** | Explorador del dataset con filtros por sentimiento y categoría |
+| **Sistema** | Estado del índice RAG activo y configuración del pipeline |
 
-Clasificacion de sentimiento (positivo / neutro / negativo) sobre 1M de resenas. Metrica principal: F1-Macro, para penalizar el sesgo hacia la clase mayoritaria (74% positivo).
+### Endpoints de la API
 
-| Modelo | F1-Macro | Bal. Accuracy | ROC-AUC |
-|--------|----------|---------------|---------|
-| Naive Bayes | 0.5574 | 0.5574 | 0.9000 |
-| Logistic Regression TF-IDF | 0.6910 | 0.7200 | 0.9425 |
-| XGBoost TF-IDF | 0.6790 | 0.7492 | 0.9310 |
-| LightGBM TF-IDF (ganador) | 0.6945 | 0.7575 | 0.9320 |
-
-El benchmark con FLAML AutoML (500 segundos, F1-Macro optimizado) confirmo LightGBM como mejor modelo. Los modelos manuales igualaron o superaron los resultados de AutoML.
-
-Se implementaron ademas regresion de rating (CatBoost, MAE 0.29, R2 ~ 0.934) y clasificacion de helpfulness (LightGBM), y clustering de productos con PCA + KMeans k=3 (Silhouette 0.311).
-
-### Fase 3 — Deep Learning y Embeddings
-
-Se entrenaron embeddings con DistilBERT-base-uncased usando LoRA (PEFT) para clasificacion de sentimiento. La reduccion de dimensionalidad con UMAP permite visualizar la separacion semantica entre clases.
-
-Se construyo ademas un ensemble por stacking combinando TF-IDF, embeddings MiniLM y DistilBERT.
-
-Comparativa final (conjunto de test):
-
-| Modelo | F1-Macro | Bal. Accuracy | ROC-AUC | Score Compuesto |
-|--------|----------|---------------|---------|-----------------|
-| DistilBERT + LoRA (ganador) | 0.7272 | 0.7833 | 0.9483 | 0.8104 |
-| Stacking Ensemble | 0.7250 | 0.7811 | 0.9470 | 0.8084 |
-| LightGBM TF-IDF | 0.6945 | 0.7575 | 0.9320 | 0.7847 |
-| LogReg Embeddings | 0.6483 | 0.7100 | 0.9045 | 0.7437 |
-
-El DistilBERT mejora el F1-Macro en 3.3 puntos porcentuales sobre el baseline y en 4.7 puntos en la clase neutral, que es la mas dificil por ser minoritaria y semanticamente ambigua.
-
-### Fase 4 — MLOps y Recuperacion Semantica
-
-Pipeline de recuperacion semantica sobre resenas de electronica con FAISS y embeddings multilingues (`paraphrase-multilingual-MiniLM-L12-v2`). El sistema permite consultas en espanol sobre un corpus en ingles sin traduccion previa.
-
-Resultados sobre 7 queries de prueba:
-
-| Metrica | Resultado | Objetivo |
-|---------|-----------|----------|
-| Precision@5 media | 0.80 | >= 0.60 |
-| MRR media | 0.93 | >= 0.60 |
-| Latencia media | 22 ms | < 200 ms |
-
-Todos los objetivos superados. La comparacion con TF-IDF mostro que los embeddings MiniLM son superiores en queries donde la semantica importa mas que la coincidencia lexica, y son el unico enfoque viable para busqueda cross-language.
-
-El pipeline MLOps incluye tracking con MLflow, versionado del indice FAISS, politica de actualizacion con tres triggers (antiguedad > 30 dias, drift de calidad, volumen de datos nuevos > 10%) y retencion de las ultimas 3 versiones.
+| Método | Ruta | Descripción |
+|---|---|---|
+| `POST` | `/api/predict` | Body: `{"text": "...", "model": "baseline" \| "transformer"}` |
+| `GET` | `/api/metrics` | Métricas de ambos modelos |
+| `GET` | `/api/embeddings/umap` | Coordenadas UMAP |
+| `GET` | `/api/search?q=...&top_k=5` | Búsqueda semántica RAG |
+| `GET` | `/api/info` | Info del índice FAISS activo |
 
 ---
 
-## Notas de reproducibilidad
+## Metodología
 
-Los archivos `.joblib` del pipeline y el modelo LightGBM fueron serializados con scikit-learn 1.8 y cuML/RAPIDS en GPU. Para cargarlos en CPU sin RAPIDS instalado, el repositorio incluye `demo/routes/migrar_pipeline_cpu.py` con las clases equivalentes en sklearn puro. Este archivo debe estar presente antes de ejecutar `demo/main.py`.
+El proyecto sigue las fases de **CRISP-DM**:
 
-El adaptador LoRA del transformer (`models/distilbert_lora/`) debe descargarse por separado desde el Drive compartido del equipo y colocarse en esa ruta antes de iniciar el servidor.
+```
+Business Understanding → Data Understanding → Data Preparation
+        ↓
+   Modeling → Evaluation → Deployment
+```
 
-Los archivos de datos (`data/*.joblib`, `data/*.csv`) no estan incluidos en el repositorio por su tamano. Contactar al equipo para acceso.
-
----
-
-## Stack tecnologico
-
-| Libreria | Uso |
-|----------|-----|
-| FastAPI + Uvicorn | API REST y servidor de la demo |
-| scikit-learn | Pipeline CPU, TF-IDF, StandardScaler, metricas |
-| LightGBM | Modelo baseline de sentimiento |
-| sentence-transformers | Embeddings MiniLM para RAG |
-| FAISS (faiss-cpu) | Indice vectorial de busqueda exacta |
-| transformers + peft | DistilBERT con adaptador LoRA |
-| MLflow | Tracking de experimentos y versionado |
-| pandas + numpy + scipy | Procesamiento de datos |
-| cuML / RAPIDS | Entrenamiento en GPU (solo notebooks, no produccion) |
-| FLAML | AutoML benchmark en Fase 2 |
-| Optuna | Optimizacion de hiperparametros |
-| UMAP-learn | Reduccion de dimensionalidad de embeddings |
+| Fase | Artefacto |
+|---|---|
+| 1. Business Understanding | Definición de módulos y métricas objetivo |
+| 2. Data Understanding | EDA de distribución de texto, sentimiento y categorías |
+| 3. Data Preparation | Limpieza, chunking con overlap, imputación de precio |
+| 4. Modeling | LightGBM + TF-IDF · DistilBERT+LoRA · FAISS + MiniLM |
+| 5. Evaluation | Métricas de clasificación + recuperación RAG |
+| 6. Deployment | Demo FastAPI + política de actualización del índice |
 
 ---
 
-## Consideraciones eticas
+## Resultados
 
-El dataset contiene resenas de usuarios reales de Amazon. No se incluye informacion de identificacion personal. El subconjunto usado fue muestreado aleatoriamente y el criterio de muestreo esta documentado en `data/FUENTE.md`.
+### Módulo I — Clasificación de Sentimiento
 
-El modelo de sentimiento tiene sesgo hacia la clase positiva por el desbalance natural del dataset (74% positivo). Se uso F1-Macro como metrica principal precisamente para penalizar este comportamiento. En produccion, las predicciones de la clase neutral deben interpretarse con cautela dado su menor rendimiento (F1-Neutral baseline: 0.39, transformer: 0.43).
+#### Baseline — LightGBM + TF-IDF (CPU)
 
-La busqueda semantica devuelve fragmentos de resenas tal como fueron escritos por los usuarios. El sistema no genera ni modifica texto.
+Pipeline clásico con TF-IDF (10,000 features), features tabulares (longitud, precio, categoría) y optimización con Optuna.
+
+| Métrica | Validación | Test |
+|---|---|---|
+| F1 Macro | 0.6953 | 0.6945 |
+| F1 Weighted | 0.8430 | 0.8422 |
+| Balanced Accuracy | 0.7578 | 0.7575 |
+| ROC-AUC | 0.9327 | 0.9320 |
+
+#### Transformer — DistilBERT + LoRA (PEFT)
+
+Fine-tuning eficiente con adaptadores LoRA (r=8, α=16) sobre capas de atención. Modelo ganador del proyecto.
+
+| Métrica | Test |
+|---|---|
+| F1 Macro | 0.7272 |
+| Balanced Accuracy | 0.7833 |
+| ROC-AUC | 0.9483 |
+| PR-AUC | 0.7762 |
+| Score Compuesto | 0.8104 |
+
+#### Comparativa de todos los modelos evaluados
+
+| Modelo | Representación | F1 Macro | Bal. Acc | ROC-AUC | Score |
+|---|---|---|---|---|---|
+| **DistilBERT + LoRA ★** | Contextual | **0.727** | **0.783** | **0.948** | **0.810** |
+| Stacking Ensemble | TF-IDF + Emb + BERT | 0.725 | 0.781 | 0.947 | 0.808 |
+| LightGBM TF-IDF | TF-IDF + Tabular | 0.695 | 0.758 | 0.932 | 0.785 |
+| XGBoost TF-IDF | TF-IDF + Tabular | 0.679 | 0.749 | 0.931 | 0.776 |
+| LogReg TF-IDF | TF-IDF + Tabular | 0.691 | 0.720 | 0.943 | 0.775 |
+| LogReg Emb | MiniLM-384 | 0.648 | 0.710 | 0.905 | 0.744 |
+| LightGBM Emb | MiniLM-384 | 0.594 | 0.696 | 0.901 | 0.717 |
+| Naive Bayes | TF-IDF | 0.557 | 0.557 | 0.900 | 0.660 |
+
+### Módulo II — Búsqueda Semántica (RAG)
+
+Evaluación sobre 7 queries en español con corpus en inglés (búsqueda cross-language):
+
+| Query | Precision@5 | MRR | Cosine Sim | Latencia |
+|---|---|---|---|---|
+| problemas frecuentes con el producto | 0.40 | 0.50 | 0.663 | 20 ms |
+| opiniones sobre duración de batería | 1.00 | 1.00 | 0.794 | 46 ms |
+| defectos de fabricación y materiales | 0.80 | 1.00 | 0.653 | 19 ms |
+| facilidad de configuración y uso | 0.60 | 1.00 | 0.745 | 19 ms |
+| ruido y temperatura del dispositivo | 1.00 | 1.00 | 0.630 | 18 ms |
+| relación calidad precio | 0.80 | 1.00 | 0.774 | 18 ms |
+| pantalla y calidad de imagen | 1.00 | 1.00 | 0.725 | 17 ms |
+| **MEDIA** | **0.80** | **0.93** | — | **22 ms** |
+
+Objetivos cumplidos: Precision@K ≥ 0.60 · MRR ≥ 0.60 · Latencia < 200 ms
 
 ---
 
-Proyecto academico — Machine Learning 2026-I — UCB San Pablo
+## MLOps y Tracking
+
+### Pipeline reproducible
+
+Cuatro scripts independientes y configurables desde `config/rag_config.yaml`:
+
+```bash
+python src/01_build_index.py          # Construir índice FAISS + registrar run MLflow
+python src/02_evaluate_retrieval.py   # Evaluar calidad de recuperación
+python src/03_update_policy.py        # Verificar política de actualización
+python src/04_baseline_comparison.py  # Comparar TF-IDF vs embeddings MiniLM
+```
+
+### Tracking con MLflow
+
+```bash
+mlflow ui
+# Abrir http://localhost:5000
+# Experimento: "RAG_Electronics_Reviews"
+```
+
+Cada build del índice registra: parámetros (chunk_size, overlap, modelo de embeddings), métricas (Precision@K, MRR, latencia) y decisiones de la política de actualización.
+
+### Versionado del índice
+
+El directorio `models/faiss_index/` mantiene múltiples versiones. `latest.json` apunta a la versión activa, desacoplando el código de una versión específica. Se retienen las últimas 3 versiones.
+
+### Política de actualización automática
+
+| Trigger | Condición | Acción |
+|---|---|---|
+| T1 — Antigüedad | índice > 30 días | REBUILD |
+| T2 — Drift de calidad | cosine < 0.30 en queries de control | REBUILD |
+| T3 — Volumen de datos nuevos | > 10% del tamaño actual | REBUILD |
+
+Cada decisión (KEEP / REBUILD) queda registrada en MLflow con los valores exactos de cada trigger.
+
+---
+
+## Stack Tecnológico
+
+| Librería | Uso |
+|---|---|
+| `FastAPI` / `uvicorn` | API REST y servidor de la demo |
+| `LightGBM` | Modelo baseline de clasificación |
+| `transformers` + `peft` | DistilBERT + adaptadores LoRA |
+| `sentence-transformers` | Embeddings multilingüe para RAG |
+| `faiss-cpu` | Índice vectorial para búsqueda semántica |
+| `MLflow` | Tracking de experimentos y versionado |
+| `scikit-learn` | Pipelines, TF-IDF, métricas |
+| `Optuna` | Optimización de hiperparámetros |
+| `Plotly` | Visualizaciones interactivas (UMAP, dashboard) |
+| `Polars` / `pandas` | Manipulación de datos |
+
+---
+
+## Integrantes
+
+| Nombre 
+|---|---|
+| Adriana Nathalie Rocha Vedia |
+| Ivonne Micaela Colque Murillo |
+| Dilan Obed Mamani Pamuri | 
+| Tania Morelia Pérez Dick | 
+| Ignacio Retamozo Torrez |
+
+<div align="center">
+  <sub>Proyecto académico · Machine Learning · UCB San Pablo · 2026</sub>
+</div>
