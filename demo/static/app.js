@@ -53,7 +53,7 @@ function setupTabs() {
       if (target === "status")       loadStatus();
 
       if (target === "sentiment" && window.loadSentiment) window.loadSentiment();
-      if (target === "embeddings" && window.loadEmbeddings) window.loadEmbeddings();
+      if (target === "umap" && window.loadUmap) window.loadUmap();
       if (target === "dashboard" && window.loadDashboard) window.loadDashboard();
     });
   });
